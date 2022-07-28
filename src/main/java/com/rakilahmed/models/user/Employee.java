@@ -19,4 +19,16 @@ public class Employee extends User {
     public Employee(String username, String password, String employeeName, String email) {
         super(username, password, employeeName, email);
     }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "userId=" + getUserId() +
+                ", username='" + getUsername() + '\'' +
+                ", password='" + getPassword() + '\'' +
+                ", fullName='" + getFullName() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", isLoggedIn=" + isLoggedIn() +
+                '}';
+    }
 }

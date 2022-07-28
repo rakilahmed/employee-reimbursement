@@ -6,6 +6,7 @@ public abstract class User {
     private String password;
     private String fullName;
     private String email;
+    private boolean isLoggedIn;
 
     /**
      * Default constructor for User class.
@@ -16,6 +17,7 @@ public abstract class User {
         this.password = "";
         this.fullName = "";
         this.email = "";
+        this.isLoggedIn = false;
     }
 
     /**
@@ -31,6 +33,7 @@ public abstract class User {
         this.password = password;
         this.fullName = fullName;
         this.email = email;
+        this.isLoggedIn = false;
     }
 
     /**
@@ -79,6 +82,15 @@ public abstract class User {
     }
 
     /**
+     * Getter for isLoggedIn.
+     * 
+     * @return isLoggedIn
+     */
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    /**
      * Setter for userId.
      * 
      * @param userId
@@ -121,5 +133,9 @@ public abstract class User {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setLoggedIn(boolean isLoggedIn) {
+        this.isLoggedIn = isLoggedIn;
     }
 }

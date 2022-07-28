@@ -19,4 +19,16 @@ public class Manager extends User {
     public Manager(String username, String password, String managerName, String email) {
         super(username, password, managerName, email);
     }
+
+    @Override
+    public String toString() {
+        return "Manager{" +
+                "userId=" + getUserId() +
+                ", username='" + getUsername() + '\'' +
+                ", password='" + getPassword() + '\'' +
+                ", fullName='" + getFullName() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", isLoggedIn=" + isLoggedIn() +
+                '}';
+    }
 }
