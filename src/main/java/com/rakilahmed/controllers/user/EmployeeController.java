@@ -1,22 +1,23 @@
 package com.rakilahmed.controllers.user;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rakilahmed.models.user.Employee;
-import com.rakilahmed.models.user.User;
-import com.rakilahmed.services.UserDAO;
+import com.rakilahmed.services.user.EmployeeDAO;
 
-public class EmployeeController extends UserController {
-    private UserDAO userDAO;
+public class EmployeeController extends UserController<Employee> {
+    private final EmployeeDAO employeeDAO;
     private Employee currentEmployee;
-    private Logger logger = LogManager.getLogger(EmployeeController.class);
+    private final Logger logger = LogManager.getLogger(EmployeeController.class);
 
     /**
      * Default constructor for EmployeeController class.
      */
-    public EmployeeController(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public EmployeeController(EmployeeDAO employeeDAO) {
+        this.employeeDAO = employeeDAO;
     }
 
     /**
@@ -28,63 +29,57 @@ public class EmployeeController extends UserController {
         return currentEmployee;
     }
 
-    /**
-     * Registers a new employee.
-     *
-     * @param employee The employee to register.
-     * @return String indicating whether the employee was registered successfully.
-     */
-    @Override
-    public String register(User employee) {
+    public String register(Employee employee) {
+        if (employee == null) {
+            logger.warn("Employee is null");
+            return "Employee is null";
+        }
+
         logger.info("Registering employee: " + employee.getUsername());
-        int id = userDAO.insert(employee);
+        int id = employeeDAO.insert(employee);
 
         if (id > 0) {
             employee.setUserId(id);
-            currentEmployee = (Employee) employee;
+            currentEmployee = employee;
 
             logger.info("Employee registered successfully: " + employee.getUsername());
             return "Employee registered successfully";
         }
 
-        currentEmployee = (Employee) employee;
+        currentEmployee = employee;
 
-        logger.info("Employee registration failed: " + employee.getUsername());
+        logger.warn("Employee registration failed: " + employee.getUsername());
         return "Employee registration failed";
     }
 
-    /**
-     * Logs in an employee.
-     *
-     * @param employee The employee to login.
-     * @return String indicating whether the employee was logged in successfully.
-     */
-    @Override
-    public String login(User employee) {
+    public String login(Employee employee) {
+        if (employee == null) {
+            logger.warn("Employee is null");
+            return "Employee is null";
+        }
+
         logger.info("Logging in employee: " + employee.getUsername());
 
-        if (userDAO.exists(employee.getUsername(), employee.getPassword())) {
+        if (employeeDAO.exists(employee)) {
             employee.setLoggedIn(true);
-            currentEmployee = (Employee) employee;
+            currentEmployee = employee;
 
             logger.info("Employee logged in successfully: " + employee.getUsername());
             return "Employee logged in successfully";
         }
 
-        currentEmployee = (Employee) employee;
+        currentEmployee = employee;
 
-        logger.info("Employee login failed: " + employee.getUsername());
+        logger.warn("Employee login failed: " + employee.getUsername());
         return "Employee login failed";
     }
 
-    /**
-     * Logs out an employee.
-     *
-     * @param employee The employee to log out.
-     * @return String indicating whether the employee was logged out successfully.
-     */
-    @Override
-    public String logout(User employee) {
+    public String logout(Employee employee) {
+        if (employee == null) {
+            logger.warn("Employee is null");
+            return "Employee is null";
+        }
+
         logger.info("Logging out employee: " + employee.getUsername());
 
         if (employee.isLoggedIn()) {
@@ -95,62 +90,88 @@ public class EmployeeController extends UserController {
             return "Employee logged out successfully";
         }
 
-        currentEmployee = (Employee) employee;
+        currentEmployee = employee;
 
-        logger.info("Employee logout failed: " + employee.getUsername());
+        logger.warn("Employee logout failed: " + employee.getUsername());
         return "Employee logout failed";
     }
 
-    /**
-     * View employee's profile.
-     * 
-     * @param id The employee's id.
-     * @return Employee's profile as a string.
-     */
     public String viewProfile(int id) {
-        logger.info("Locating employee profile: " + id);
-        Employee employee = userDAO.getEmployee(id);
-
-        if (employee == null) {
-            logger.info("Employee's profile not found: " + id);
-            return "Employee not found";
+        if (id <= 0) {
+            logger.warn("Employee id is invalid: " + id);
+            return "Employee id is invalid";
         }
 
-        employee.setUserId(id);
-        employee.setLoggedIn(true);
+        logger.info("Locating employee profile: " + id);
+        Employee employee = employeeDAO.get(id);
 
-        logger.info("Employee's profile found: " + id);
+        if (employee == null) {
+            logger.warn("Employee is null");
+            return "Employee is null";
+        } else if (!employeeDAO.exists(employee)) {
+            logger.warn("Employee profile not found: " + id);
+            return "Employee profile not found";
+        }
+
+        logger.info("Employee profile found successfully: " + employee.getUsername());
         return employee.toString();
     }
 
-    /**
-     * Edit employee's profile.
-     * 
-     * @param employee    The employee to edit.
-     * @param newUsername The new username of the employee.
-     * @param newPassword The new password of the employee.
-     * @param newFullName The new full name of the employee.
-     * @param newEmail    The new email of the employee.
-     * @return Employee, with the new profile.
-     */
     public Employee editProfile(Employee employee, String newUsername, String newPassword, String newFullName,
             String newEmail) {
-        logger.info("Editing employee profile: " + employee.getUsername());
-        int id = employee.getUserId();
+        if (employee == null) {
+            logger.warn("Employee is null");
+            return null;
+        }
 
-        if (userDAO.update(employee, newUsername, newPassword, newFullName, newEmail)) {
-            employee.setUserId(id);
+        logger.info("Editing employee profile: " + employee.getUsername());
+
+        if (employeeDAO.exists(employee)) {
             employee.setUsername(newUsername);
             employee.setPassword(newPassword);
             employee.setFullName(newFullName);
             employee.setEmail(newEmail);
-            employee.setLoggedIn(true);
+            employeeDAO.update(employee.getId(), employee);
 
-            currentEmployee = employee;
             logger.info("Employee profile edited successfully: " + employee.getUsername());
+        } else {
+            logger.warn("Employee not found: " + employee.getUsername());
         }
 
-        logger.info("Employee's profile editing faild or no change was made: " + employee.getUsername());
         return employee;
+    }
+
+    public Employee get(int id) {
+        if (id <= 0) {
+            logger.warn("Employee id is invalid: " + id);
+            return null;
+        }
+
+        logger.info("Locating employee: " + id);
+        Employee employee = employeeDAO.get(id);
+
+        if (employee == null) {
+            logger.warn("Employee is null");
+            return null;
+        } else if (!employeeDAO.exists(employee)) {
+            logger.warn("Employee not found: " + id);
+            return null;
+        }
+
+        logger.info("Employee found successfully: " + employee.getUsername());
+        return employee;
+    }
+
+    public List<Employee> getAll() {
+        logger.info("Getting all employees");
+        List<Employee> employees = employeeDAO.getAll();
+
+        if (employees != null) {
+            logger.info("Retrieved all employees successfully: " + employees.size());
+            return employees;
+        }
+
+        logger.info("Failed to retrieve all employees");
+        return null;
     }
 }
