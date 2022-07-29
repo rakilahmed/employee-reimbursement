@@ -33,6 +33,9 @@ public class EmployeeController extends UserController<Employee> {
         if (employee == null) {
             logger.warn("Employee is null");
             return "Employee is null";
+        } else if (employeeDAO.exists(employee)) {
+            logger.warn("Employee already exists");
+            return "Employee already exists";
         }
 
         logger.info("Registering employee: " + employee.getUsername());

@@ -33,6 +33,9 @@ public class ManagerController extends UserController<Manager> {
         if (manager == null) {
             logger.warn("Manager is null");
             return "Manager is null";
+        } else if (managerDAO.exists(manager)) {
+            logger.warn("Manager already exists");
+            return "Manager already exists";
         }
 
         logger.info("Registering manager: " + manager.getId());
