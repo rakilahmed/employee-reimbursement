@@ -1,7 +1,7 @@
 package com.rakilahmed.models.user;
 
 public abstract class User {
-    private int userId;
+    private int id;
     private String username;
     private String password;
     private String fullName;
@@ -12,7 +12,7 @@ public abstract class User {
      * Default constructor for User class.
      */
     public User() {
-        this.userId = 0;
+        this.id = 0;
         this.username = "";
         this.password = "";
         this.fullName = "";
@@ -23,10 +23,10 @@ public abstract class User {
     /**
      * Parameterized constructor for User class.
      * 
-     * @param username
-     * @param password
-     * @param fullName
-     * @param email
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @param fullName The full name of the user.
+     * @param email    The email of the user.
      */
     public User(String username, String password, String fullName, String email) {
         this.username = username;
@@ -37,12 +37,49 @@ public abstract class User {
     }
 
     /**
-     * Getter for userId.
+     * Parameterized constructor for User class.
      * 
-     * @return userId
+     * @param id       The user's id.
+     * @param username The user's username.
+     * @param password The user's password.
+     * @param fullName The user's full name.
+     * @param email    The user's email.
      */
-    public int getUserId() {
-        return userId;
+    public User(int id, String username, String password, String fullName, String email) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.email = email;
+        this.isLoggedIn = false;
+    }
+
+    /**
+     * Parameterized constructor for User class.
+     * 
+     * @param id         The user's id.
+     * @param username   The user's username.
+     * @param password   The user's password.
+     * @param fullName   The user's full name.
+     * @param email      The user's email.
+     * @param isLoggedIn Whether the user is logged in.
+     */
+    public User(int id, String username, String password, String fullName, String email, boolean isLoggedIn) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.email = email;
+        this.isLoggedIn = isLoggedIn;
+    }
+
+    /**
+     * Getter for id.
+     * 
+     * @return id
+     */
+    public int getId() {
+        return id;
     }
 
     /**
@@ -93,16 +130,16 @@ public abstract class User {
     /**
      * Setter for userId.
      * 
-     * @param userId
+     * @param userId The user's id.
      */
     public void setUserId(int userId) {
-        this.userId = userId;
+        this.id = userId;
     }
 
     /**
      * Setter for username.
      * 
-     * @param username
+     * @param username The user's username.
      */
     public void setUsername(String username) {
         this.username = username;
@@ -111,7 +148,7 @@ public abstract class User {
     /**
      * Setter for password.
      * 
-     * @param password
+     * @param password The user's password.
      */
     public void setPassword(String password) {
         this.password = password;
@@ -120,7 +157,7 @@ public abstract class User {
     /**
      * Setter for fullName.
      * 
-     * @param fullName
+     * @param fullName The user's full name.
      */
     public void setFullName(String fullName) {
         this.fullName = fullName;
@@ -129,12 +166,17 @@ public abstract class User {
     /**
      * Setter for email.
      * 
-     * @param email
+     * @param email The user's email.
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Setter for isLoggedIn.
+     * 
+     * @param isLoggedIn Whether the user is logged in.
+     */
     public void setLoggedIn(boolean isLoggedIn) {
         this.isLoggedIn = isLoggedIn;
     }
