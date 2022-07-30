@@ -128,12 +128,12 @@ public abstract class User {
     }
 
     /**
-     * Setter for userId.
+     * Setter for id.
      * 
-     * @param userId The user's id.
+     * @param id The user's id.
      */
-    public void setUserId(int userId) {
-        this.id = userId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**

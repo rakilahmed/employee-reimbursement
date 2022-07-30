@@ -37,19 +37,41 @@ public class ManagerDAO implements DAO<Manager> {
     }
 
     @Override
+    public int getNextAvailableID() {
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT max(user_id) FROM users";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+
+            return resultSet.getInt(1) + 1;
+        } catch (SQLException e) {
+            logger.error("Error getting next available ID.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return -1;
+    }
+
+    @Override
     public int insert(Manager manager) {
         logger.info("Inserting manager: " + manager.getUsername());
 
         try {
             Connection connection = connectionManager.getConnection();
-            String sql = "INSERT INTO users (username, password, full_name, email, user_type) VALUES (?, ?, ?, ?, ?) RETURNING user_id";
+            String sql = "INSERT INTO users (user_id, username, password, full_name, email, user_type) VALUES (?, ?, ?, ?, ?, ?) RETURNING user_id";
 
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, manager.getUsername());
-            statement.setString(2, manager.getPassword());
-            statement.setString(3, manager.getFullName());
-            statement.setString(4, manager.getEmail());
-            statement.setString(5, "MANAGER");
+            statement.setInt(1, getNextAvailableID());
+            statement.setString(2, manager.getUsername());
+            statement.setString(3, manager.getPassword());
+            statement.setString(4, manager.getFullName());
+            statement.setString(5, manager.getEmail());
+            statement.setString(6, "MANAGER");
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -60,15 +82,20 @@ public class ManagerDAO implements DAO<Manager> {
             }
         } catch (SQLException e) {
             logger.error("Manager insertion failed: " + manager.getUsername());
-            return -1;
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
         }
 
-        logger.info("Manager insertion failed: " + manager.getUsername());
         return -1;
     }
 
     @Override
     public boolean exists(Manager manager) {
+        if (manager == null) {
+            return false;
+        }
+
         logger.info("Verifying if manager exists: " + manager.getUsername());
         boolean exists = false;
 
@@ -98,8 +125,9 @@ public class ManagerDAO implements DAO<Manager> {
     }
 
     @Override
-    public Manager update(int id, Manager updatedManager) {
+    public boolean update(int id, Manager updatedManager) {
         logger.info("Updating manager with ID: " + id);
+        boolean updated = false;
 
         try {
             Connection connection = connectionManager.getConnection();
@@ -114,6 +142,7 @@ public class ManagerDAO implements DAO<Manager> {
 
             statement.executeUpdate();
             logger.info("Employee updated successfully. ID:  " + id);
+            updated = true;
         } catch (SQLException e) {
             logger.error("Error updating manager with ID: " + id, e);
         } finally {
@@ -121,7 +150,7 @@ public class ManagerDAO implements DAO<Manager> {
             logger.info("Connection closed.");
         }
 
-        return updatedManager;
+        return updated;
     }
 
     @Override
@@ -162,7 +191,7 @@ public class ManagerDAO implements DAO<Manager> {
 
         try {
             Connection connection = connectionManager.getConnection();
-            String sql = "SELECT * FROM users WHERE user_type = 'MANAGER'";
+            String sql = "SELECT * FROM users WHERE user_type = 'MANAGER' ORDER BY user_id";
 
             PreparedStatement statement = connection.prepareStatement(sql);
 

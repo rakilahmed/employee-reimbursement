@@ -36,17 +36,16 @@ public abstract class UserController<T> {
     public abstract String viewProfile(int id);
 
     /**
-     * Edit user's profile.
+     * Update user's profile.
      * 
-     * @param user        The user to edit.
-     * @param newUsername The new username of the user.
-     * @param newPassword The new password of the user.
-     * @param newFullName The new full name of the user.
-     * @param newEmail    The new email of the user.
-     * @return User, with the new profile.
+     * @param id       The user's id.
+     * @param username The updated username.
+     * @param password The updated password.
+     * @param fullName The updated full name.
+     * @param email    The updated email.
+     * @return The updated user.
      */
-    public abstract T editProfile(T user, String newUsername, String newPassword, String newFullName,
-            String newEmail);
+    public abstract String updateProfile(int id, String username, String password, String fullName, String email);
 
     /**
      * Returns the user with the given id.

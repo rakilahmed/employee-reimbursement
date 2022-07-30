@@ -24,13 +24,21 @@ public class ManagerControllerTest {
         managerController = new ManagerController(managerDAO);
 
         manager = new Manager(1, "rakil", "secret", "Rakil Ahmed", "rakil@email.com");
-        manager.setLoggedIn(true);
     }
 
     @Test
     public void testSuccessfulRegister() {
-        String expected = "Manager registered successfully";
+        String expected = "Manager registered successfully. Manager ID: 1";
         when(managerDAO.insert(manager)).thenReturn(1);
+        String actual = managerController.register(manager);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testManagerAlreadyExists() {
+        String expected = "Manager already exists";
+        when(managerDAO.exists(manager)).thenReturn(true);
         String actual = managerController.register(manager);
 
         assertEquals(expected, actual);
@@ -47,7 +55,7 @@ public class ManagerControllerTest {
 
     @Test
     public void testSuccessfulLogin() {
-        String expected = "Manager logged in successfully";
+        String expected = "Manager logged in successfully. Manager ID: 1";
         when(managerDAO.exists(manager)).thenReturn(true);
         String actual = managerController.login(manager);
 
@@ -55,8 +63,8 @@ public class ManagerControllerTest {
     }
 
     @Test
-    public void testFailedLogin() {
-        String expected = "Manager login failed";
+    public void testManagerDoesNotExist() {
+        String expected = "Manager does not exist";
         when(managerDAO.exists(manager)).thenReturn(false);
         String actual = managerController.login(manager);
 
@@ -65,15 +73,16 @@ public class ManagerControllerTest {
 
     @Test
     public void testSuccessfulLogout() {
-        String expected = "Manager logged out successfully";
+        String expected = "Manager logged out successfully. Manager ID: 1";
+        manager.setLoggedIn(true);
         String actual = managerController.logout(manager);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testFailedLogout() {
-        String expected = "Manager logout failed";
+    public void testManagerIsNotLoggedIn() {
+        String expected = "Manager is not logged in";
         manager.setLoggedIn(false);
         String actual = managerController.logout(manager);
 
@@ -91,7 +100,15 @@ public class ManagerControllerTest {
     }
 
     @Test
-    public void testFailedViewProfile() {
+    public void testManagerIdIsInvalid() {
+        String expected = "Manager id is invalid. Manager ID: 0";
+        String actual = managerController.viewProfile(0);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testManagerProfileNotFound() {
         String expected = "Manager profile not found";
         when(managerDAO.get(manager.getId())).thenReturn(manager);
         when(managerDAO.exists(manager)).thenReturn(false);
@@ -101,10 +118,23 @@ public class ManagerControllerTest {
     }
 
     @Test
-    public void testSuccessfulEditProfile() {
-        String expected = manager.toString();
-        when(managerDAO.update(manager.getId(), manager)).thenReturn(manager);
-        String actual = (managerController.editProfile(manager, "rakil", "secret", "Rakil Ahmed", "test")).toString();
+    public void testSuccessfulUpdateProfile() {
+        String expected = "Manager profile updated successfully. Manager ID: 1";
+        when(managerDAO.get(manager.getId())).thenReturn(manager);
+        when(managerDAO.exists(manager)).thenReturn(true);
+        when(managerDAO.update(manager.getId(), manager)).thenReturn(true);
+        String actual = managerController.updateProfile(manager.getId(), "test", "pass", "test pass", "test@email.com");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testFailedUpdateProfile() {
+        String expected = "Manager profile update failed";
+        when(managerDAO.get(manager.getId())).thenReturn(manager);
+        when(managerDAO.exists(manager)).thenReturn(true);
+        when(managerDAO.update(manager.getId(), manager)).thenReturn(false);
+        String actual = managerController.updateProfile(manager.getId(), "test", "pass", "test pass", "test@email.com");
 
         assertEquals(expected, actual);
     }

@@ -30,88 +30,67 @@ public class EmployeeController extends UserController<Employee> {
     }
 
     public String register(Employee employee) {
-        if (employee == null) {
-            logger.warn("Employee is null");
-            return "Employee is null";
-        } else if (employeeDAO.exists(employee)) {
-            logger.warn("Employee already exists");
+        logger.info("Registering employee: " + employee.getUsername());
+
+        if (employeeDAO.exists(employee)) {
+            logger.warn("Employee already exists: " + employee.getUsername());
             return "Employee already exists";
         }
 
-        logger.info("Registering employee: " + employee.getUsername());
         int id = employeeDAO.insert(employee);
 
-        if (id > 0) {
-            employee.setUserId(id);
-            currentEmployee = employee;
-
-            logger.info("Employee registered successfully: " + employee.getUsername());
-            return "Employee registered successfully";
+        if (id <= 0) {
+            logger.warn("Employee registration failed: " + employee.getUsername());
+            return "Employee registration failed";
         }
 
+        employee.setId(id);
         currentEmployee = employee;
 
-        logger.warn("Employee registration failed: " + employee.getUsername());
-        return "Employee registration failed";
+        logger.info("Employee registered successfully: " + employee.getId());
+        return "Employee registered successfully. Employee ID: " + employee.getId();
     }
 
     public String login(Employee employee) {
-        if (employee == null) {
-            logger.warn("Employee is null");
-            return "Employee is null";
-        }
-
         logger.info("Logging in employee: " + employee.getUsername());
 
-        if (employeeDAO.exists(employee)) {
-            employee.setLoggedIn(true);
-            currentEmployee = employee;
-
-            logger.info("Employee logged in successfully: " + employee.getUsername());
-            return "Employee logged in successfully";
+        if (!employeeDAO.exists(employee)) {
+            logger.warn("Employee does not exist: " + employee.getUsername());
+            return "Employee does not exist";
         }
 
+        employee.setLoggedIn(true);
         currentEmployee = employee;
 
-        logger.warn("Employee login failed: " + employee.getUsername());
-        return "Employee login failed";
+        logger.info("Employee logged in successfully: " + employee.getUsername());
+        return "Employee logged in successfully. Employee ID: " + employee.getId();
     }
 
     public String logout(Employee employee) {
-        if (employee == null) {
-            logger.warn("Employee is null");
-            return "Employee is null";
-        }
-
         logger.info("Logging out employee: " + employee.getUsername());
 
-        if (employee.isLoggedIn()) {
-            employee.setLoggedIn(false);
-            currentEmployee = null;
-
-            logger.info("Employee logged out successfully: " + employee.getUsername());
-            return "Employee logged out successfully";
+        if (!employee.isLoggedIn()) {
+            logger.warn("Employee is not logged in: " + employee.getUsername());
+            return "Employee is not logged in";
         }
 
-        currentEmployee = employee;
+        employee.setLoggedIn(false);
+        currentEmployee = null;
 
-        logger.warn("Employee logout failed: " + employee.getUsername());
-        return "Employee logout failed";
+        logger.info("Employee logged out successfully: " + employee.getUsername());
+        return "Employee logged out successfully. Employee ID: " + employee.getId();
     }
 
     public String viewProfile(int id) {
         if (id <= 0) {
             logger.warn("Employee id is invalid: " + id);
-            return "Employee id is invalid";
+            return "Employee id is invalid. Employee ID: " + id;
         }
 
         logger.info("Locating employee profile: " + id);
         Employee employee = employeeDAO.get(id);
 
-        if (employee == null) {
-            logger.warn("Employee is null");
-            return "Employee is null";
-        } else if (!employeeDAO.exists(employee)) {
+        if (!employeeDAO.exists(employee)) {
             logger.warn("Employee profile not found: " + id);
             return "Employee profile not found";
         }
@@ -120,28 +99,42 @@ public class EmployeeController extends UserController<Employee> {
         return employee.toString();
     }
 
-    public Employee editProfile(Employee employee, String newUsername, String newPassword, String newFullName,
-            String newEmail) {
-        if (employee == null) {
-            logger.warn("Employee is null");
-            return null;
+    public String updateProfile(int id, String username, String password, String fullName, String email) {
+        logger.info("Updating employee profile: " + id);
+
+        if (id <= 0) {
+            logger.warn("Employee id is invalid: " + id);
+            return "Employee id is invalid. Employee ID: " + id;
         }
 
-        logger.info("Editing employee profile: " + employee.getUsername());
-
-        if (employeeDAO.exists(employee)) {
-            employee.setUsername(newUsername);
-            employee.setPassword(newPassword);
-            employee.setFullName(newFullName);
-            employee.setEmail(newEmail);
-            employeeDAO.update(employee.getId(), employee);
-
-            logger.info("Employee profile edited successfully: " + employee.getUsername());
-        } else {
-            logger.warn("Employee not found: " + employee.getUsername());
+        if (username == null || username.isEmpty() || password == null || password.isEmpty() || fullName == null
+                || fullName.isEmpty() || email == null || email.isEmpty()) {
+            logger.warn("Employee profile update failed: " + id);
+            return "Employee profile update failed. Employee ID: " + id;
         }
 
-        return employee;
+        Employee employee = employeeDAO.get(id);
+
+        if (!employeeDAO.exists(employee)) {
+            logger.warn("Employee profile not found: " + id);
+            return "Employee profile not found";
+        }
+
+        employee.setUsername(username);
+        employee.setPassword(password);
+        employee.setFullName(fullName);
+        employee.setEmail(email);
+        employee.setLoggedIn(true);
+
+        if (!employeeDAO.update(employee.getId(), employee)) {
+            logger.warn("Employee profile update failed: " + id);
+            return "Employee profile update failed";
+        }
+
+        currentEmployee = employee;
+
+        logger.info("Employee profile updated successfully: " + employee.getUsername());
+        return "Employee profile updated successfully. Employee ID: " + employee.getId();
     }
 
     public Employee get(int id) {
@@ -153,10 +146,7 @@ public class EmployeeController extends UserController<Employee> {
         logger.info("Locating employee: " + id);
         Employee employee = employeeDAO.get(id);
 
-        if (employee == null) {
-            logger.warn("Employee is null");
-            return null;
-        } else if (!employeeDAO.exists(employee)) {
+        if (!employeeDAO.exists(employee)) {
             logger.warn("Employee not found: " + id);
             return null;
         }
@@ -169,12 +159,12 @@ public class EmployeeController extends UserController<Employee> {
         logger.info("Getting all employees");
         List<Employee> employees = employeeDAO.getAll();
 
-        if (employees != null) {
-            logger.info("Retrieved all employees successfully: " + employees.size());
-            return employees;
+        if (employees.isEmpty()) {
+            logger.warn("No employees found");
+            return null;
         }
 
-        logger.info("Failed to retrieve all employees");
-        return null;
+        logger.info("All employees found successfully");
+        return employees;
     }
 }

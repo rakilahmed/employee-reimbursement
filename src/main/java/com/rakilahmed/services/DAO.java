@@ -4,6 +4,13 @@ import java.util.List;
 
 public interface DAO<T> {
     /**
+     * Gets the next available ID from the database.
+     * 
+     * @return The next available ID.
+     */
+    int getNextAvailableID();
+
+    /**
      * Inserts a new item into the database.
      * 
      * @param item The item to insert.
@@ -24,9 +31,9 @@ public interface DAO<T> {
      * 
      * @param id          The id of the item to update.
      * @param updatedItem The updated item.
-     * @return The updated item.
+     * @return If the item was updated successfully.
      */
-    T update(int id, T updatedItem);
+    boolean update(int id, T updatedItem);
 
     /**
      * Retrieves an item from the database.
