@@ -14,7 +14,9 @@ public class EmployeeController extends UserController<Employee> {
     private final Logger logger = LogManager.getLogger(EmployeeController.class);
 
     /**
-     * Default constructor for EmployeeController class.
+     * Parameterized constructor for EmployeeController class.
+     * 
+     * @param employeeDAO The DAO class to set.
      */
     public EmployeeController(EmployeeDAO employeeDAO) {
         this.employeeDAO = employeeDAO;
@@ -32,7 +34,7 @@ public class EmployeeController extends UserController<Employee> {
     public String register(Employee employee) {
         logger.info("Registering employee: " + employee.getUsername());
 
-        if (employeeDAO.exists(employee)) {
+        if (employee.getId() > 0 && employeeDAO.exists(employee)) {
             logger.warn("Employee already exists: " + employee.getUsername());
             return "Employee already exists";
         }
@@ -159,7 +161,7 @@ public class EmployeeController extends UserController<Employee> {
         logger.info("Getting all employees");
         List<Employee> employees = employeeDAO.getAll();
 
-        if (employees.isEmpty()) {
+        if (employees.isEmpty() || employees == null) {
             logger.warn("No employees found");
             return null;
         }

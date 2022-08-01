@@ -50,6 +50,7 @@ public abstract class UserController<T> {
     /**
      * Returns the user with the given id.
      * 
+     * @param id The user's id.
      * @return The user with the given id.
      */
     public abstract T get(int id);

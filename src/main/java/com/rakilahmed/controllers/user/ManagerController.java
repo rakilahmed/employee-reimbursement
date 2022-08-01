@@ -14,7 +14,9 @@ public class ManagerController extends UserController<Manager> {
     private final Logger logger = LogManager.getLogger(ManagerController.class);
 
     /**
-     * Default constructor for ManagerController class.
+     * Parameterized constructor for EmployeeController class.
+     * 
+     * @param managerDAO The DAO class to set.
      */
     public ManagerController(ManagerDAO managerDAO) {
         this.managerDAO = managerDAO;
@@ -32,7 +34,7 @@ public class ManagerController extends UserController<Manager> {
     public String register(Manager manager) {
         logger.info("Registering manager: " + manager.getUsername());
 
-        if (managerDAO.exists(manager)) {
+        if (manager.getId() > 0 && managerDAO.exists(manager)) {
             logger.warn("Manager already exists: " + manager.getUsername());
             return "Manager already exists";
         }
@@ -159,7 +161,7 @@ public class ManagerController extends UserController<Manager> {
         logger.info("Getting all managers");
         List<Manager> managers = managerDAO.getAll();
 
-        if (managers.isEmpty()) {
+        if (managers.isEmpty() || managers == null) {
             logger.warn("No managers found");
             return null;
         }
