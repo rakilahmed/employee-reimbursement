@@ -28,7 +28,7 @@ public class ManagerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws javax.servlet.ServletException, IOException {
         response.setContentType("application/json");
-        String parameter = request.getRequestURI().split("/")[3];
+        String parameter = request.getRequestURI().split("/")[2];
 
         try {
             int id = Integer.parseInt(parameter);
@@ -51,7 +51,7 @@ public class ManagerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws javax.servlet.ServletException, IOException {
         resp.setContentType("application/json");
-        String parameter = req.getRequestURI().split("/")[3];
+        String parameter = req.getRequestURI().split("/")[2];
 
         try {
             if (!parameter.equals("new")) {
@@ -84,8 +84,8 @@ public class ManagerServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp)
             throws javax.servlet.ServletException, IOException {
         resp.setContentType("application/json");
-        String idParameter = req.getRequestURI().split("/")[3];
-        String operationParameter = req.getRequestURI().split("/")[4];
+        String idParameter = req.getRequestURI().split("/")[2];
+        String operationParameter = req.getRequestURI().split("/")[3];
 
         try {
             int id = Integer.parseInt(idParameter);
