@@ -43,7 +43,7 @@ public class ManagerServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             response.getWriter().write(
                     "{" + "\"message\":\"Invalid request, to get a manager, use /managers/{id} endpoint\"" + "}");
-            response.setStatus(404);
+            response.setStatus(400);
         }
     }
 
@@ -58,7 +58,7 @@ public class ManagerServlet extends HttpServlet {
                 resp.getWriter().write(
                         "{" + "\"message\":\"Invalid request, to create a new manager, use the /managers/new endpoint\""
                                 + "}");
-                resp.setStatus(404);
+                resp.setStatus(400);
                 return;
             }
 
@@ -71,12 +71,12 @@ public class ManagerServlet extends HttpServlet {
                 resp.setStatus(201);
             } else {
                 resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
-                resp.setStatus(400);
+                resp.setStatus(404);
             }
         } catch (NumberFormatException e) {
             resp.getWriter().write("{"
                     + "\"message\":\"Invalid request, to create a new manager, use the /managers/new endpoint\"" + "}");
-            resp.setStatus(404);
+            resp.setStatus(400);
         }
     }
 
@@ -94,7 +94,7 @@ public class ManagerServlet extends HttpServlet {
                 resp.getWriter().write("{"
                         + "\"message\":\"Invalid request, to update a manager, use the /managers/{id}/update endpoint\""
                         + "}");
-                resp.setStatus(404);
+                resp.setStatus(400);
                 return;
             }
 
@@ -108,7 +108,7 @@ public class ManagerServlet extends HttpServlet {
                     resp.setStatus(200);
                 } else {
                     resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
-                    resp.setStatus(400);
+                    resp.setStatus(404);
                 }
             } else {
                 resp.getWriter().write("{" + "\"message\":\"Manager not found\"" + "}");
@@ -118,7 +118,7 @@ public class ManagerServlet extends HttpServlet {
             resp.getWriter().write(
                     "{" + "\"message\":\"Invalid request, to update a manager, use the /managers/{id}/update endpoint\""
                             + "}");
-            resp.setStatus(404);
+            resp.setStatus(400);
         }
     }
 }

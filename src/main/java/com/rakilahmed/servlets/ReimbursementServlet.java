@@ -9,41 +9,41 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rakilahmed.controllers.user.EmployeeController;
-import com.rakilahmed.models.user.Employee;
-import com.rakilahmed.services.user.EmployeeDAO;
+import com.rakilahmed.controllers.reimbursement.ReimbursementController;
+import com.rakilahmed.models.reimbursement.Reimbursement;
+import com.rakilahmed.services.reimbursement.ReimbursementDAO;
 
-@WebServlet("/employees/*")
-public class EmployeeServlet extends HttpServlet {
+@WebServlet("/reimbursements/*")
+public class ReimbursementServlet extends HttpServlet {
     private ObjectMapper objectMapper;
-    private EmployeeController employeeController;
+    private ReimbursementController reimbursementController;
 
     @Override
     public void init() throws ServletException {
         objectMapper = new ObjectMapper();
-        employeeController = new EmployeeController(new EmployeeDAO());
+        reimbursementController = new ReimbursementController(new ReimbursementDAO());
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json");
-        String parameter = request.getRequestURI().split("/")[2];
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        String parameter = req.getRequestURI().split("/")[2];
 
         try {
             int id = Integer.parseInt(parameter);
 
-            if (employeeController.get(id) != null) {
-                response.getWriter().write(objectMapper.writeValueAsString(employeeController.get(id)));
-                response.setStatus(200);
+            if (reimbursementController.get(id) != null) {
+                resp.getWriter().write(objectMapper.writeValueAsString(reimbursementController.get(id)));
+                resp.setStatus(200);
             } else {
-                response.getWriter().write("{" + "\"message\":\"Employee not found\"" + "}");
-                response.setStatus(404);
+                resp.getWriter().write("{" + "\"message\":\"No reimbursement found\"" + "}");
+                resp.setStatus(404);
             }
         } catch (NumberFormatException e) {
-            response.getWriter().write(
-                    "{" + "\"message\":\"Invalid request, to get an employee, use /employees/{id} endpoint\"" + "}");
-            response.setStatus(400);
+            resp.getWriter().write(
+                    "{" + "\"message\":\"Invalid request, to get a reimbursement, use /reimbursements/{id} endpoint\""
+                            + "}");
+            resp.setStatus(400);
         }
     }
 
@@ -55,17 +55,16 @@ public class EmployeeServlet extends HttpServlet {
         try {
             if (!parameter.equals("new")) {
                 resp.getWriter().write(
-                        "{" + "\"message\":\"Invalid request, to create a new employee, use the /employees/new endpoint\""
+                        "{" + "\"message\":\"Invalid request, to create a new reimbursement, use the /reimbursements/new endpoint\""
                                 + "}");
                 resp.setStatus(400);
                 return;
             }
-
-            Employee employee = objectMapper.readValue(req.getReader(), Employee.class);
-            String message = employeeController.register(employee);
+            Reimbursement reimbursement = objectMapper.readValue(req.getReader(), Reimbursement.class);
+            String message = reimbursementController.create(reimbursement);
 
             if (message.contains("success")) {
-                resp.getWriter().write(objectMapper.writeValueAsString(employeeController.getCurrentEmployee()));
+                resp.getWriter().write(objectMapper.writeValueAsString(reimbursement));
                 resp.setStatus(201);
             } else {
                 resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
@@ -73,7 +72,7 @@ public class EmployeeServlet extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             resp.getWriter().write(
-                    "{" + "\"message\":\"Invalid request, to create a new employee, use the /employees/new endpoint\""
+                    "{" + "\"message\":\"Invalid request, to create a new reimbursement, use the /reimbursements/new endpoint\""
                             + "}");
             resp.setStatus(400);
         }
@@ -90,24 +89,24 @@ public class EmployeeServlet extends HttpServlet {
 
             if (!operationParameter.equals("update")) {
                 resp.getWriter().write(
-                        "{" + "\"message\":\"Invalid request, to update an employee, use the /employees/{id}/update endpoint\""
+                        "{" + "\"message\":\"Invalid request, to update a reimbursement, use the /reimbursements/{id}/update endpoint\""
                                 + "}");
                 resp.setStatus(400);
                 return;
             }
 
-            if (employeeController.get(id) == null) {
-                resp.getWriter().write("{" + "\"message\":\"Employee not found\"" + "}");
+            if (reimbursementController.get(id) == null) {
+                resp.getWriter().write("{" + "\"message\":\"No reimbursement found\"" + "}");
                 resp.setStatus(404);
                 return;
             }
 
-            Employee employee = objectMapper.readValue(req.getReader(), Employee.class);
-            String message = employeeController.updateProfile(id, employee.getUsername(),
-                    employee.getPassword(), employee.getFullName(), employee.getEmail());
+            Reimbursement reimbursement = objectMapper.readValue(req.getReader(), Reimbursement.class);
+            String message = reimbursementController.update(id, reimbursement.getManagerId(),
+                    reimbursement.getStatus());
 
             if (message.contains("success")) {
-                resp.getWriter().write(objectMapper.writeValueAsString(employeeController.get(id)));
+                resp.getWriter().write(objectMapper.writeValueAsString(reimbursementController.get(id)));
                 resp.setStatus(200);
             } else {
                 resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
@@ -115,7 +114,7 @@ public class EmployeeServlet extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             resp.getWriter().write(
-                    "{" + "\"message\":\"Invalid request, to update an employee, use the /employees/{id}/update endpoint\""
+                    "{" + "\"message\":\"Invalid request, to update a reimbursement, use the /reimbursements/{id}/update endpoint\""
                             + "}");
             resp.setStatus(400);
         }
