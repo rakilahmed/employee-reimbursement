@@ -14,7 +14,7 @@ import com.rakilahmed.models.user.Manager;
 import com.rakilahmed.services.DAO;
 import com.rakilahmed.utils.ConnectionManager;
 
-public class ManagerDAO implements DAO<Manager> {
+public class ManagerDAO extends DAO<Manager> {
     private final ConnectionManager connectionManager;
     private final Logger logger = LogManager.getLogger(EmployeeDAO.class);
 
@@ -36,8 +36,7 @@ public class ManagerDAO implements DAO<Manager> {
         this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
     }
 
-    @Override
-    public int getNextAvailableID() {
+    protected int getNextAvailableID() {
         try {
             Connection connection = connectionManager.getConnection();
             String sql = "SELECT max(user_id) FROM users";
@@ -57,7 +56,6 @@ public class ManagerDAO implements DAO<Manager> {
         return -1;
     }
 
-    @Override
     public int insert(Manager manager) {
         logger.info("Inserting manager: " + manager.getUsername());
 
@@ -90,9 +88,51 @@ public class ManagerDAO implements DAO<Manager> {
         return -1;
     }
 
-    @Override
+    /**
+     * Verifies if the manager credentials are valid.
+     * 
+     * @param username The username of the manager.
+     * @param password The password of the manager.
+     * @return True if the manager credentials are valid, false otherwise.
+     */
+    public boolean verify(String username, String password) {
+        if (username == null || password == null) {
+            logger.error("Error verifying manager credentials. Username or password is null.");
+            return false;
+        }
+
+        logger.info("Verifying manager credentials. Username: " + username);
+        boolean verified = false;
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND user_type = 'MANAGER'";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, password);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                verified = true;
+                logger.info("Manager credentials verified successfully.");
+            } else {
+                logger.info("Manager credentials verification failed.");
+            }
+        } catch (SQLException e) {
+            logger.error("Error verifying manager credentials.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return verified;
+    }
+
     public boolean exists(Manager manager) {
         if (manager == null) {
+            logger.error("Error checking if manager exists. Manager is null.");
             return false;
         }
 
@@ -124,7 +164,6 @@ public class ManagerDAO implements DAO<Manager> {
         return exists;
     }
 
-    @Override
     public boolean update(int id, Manager updatedManager) {
         logger.info("Updating manager with ID: " + id);
         boolean updated = false;
@@ -153,7 +192,6 @@ public class ManagerDAO implements DAO<Manager> {
         return updated;
     }
 
-    @Override
     public Manager get(int id) {
         logger.info("Getting manager with ID: " + id);
         Manager manager = null;
@@ -168,9 +206,11 @@ public class ManagerDAO implements DAO<Manager> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                manager = new Manager(resultSet.getInt("user_id"), resultSet.getString("username"),
+                manager = new Manager(resultSet.getInt("user_id"),
+                        resultSet.getString("username"),
                         resultSet.getString("password"),
-                        resultSet.getString("full_name"), resultSet.getString("email"), true);
+                        resultSet.getString("full_name"),
+                        resultSet.getString("email"), true);
             }
 
             logger.info("Manager retrieved successfully. ID: " + id);
@@ -184,7 +224,6 @@ public class ManagerDAO implements DAO<Manager> {
         return manager;
     }
 
-    @Override
     public List<Manager> getAll() {
         logger.info("Getting all managers");
         List<Manager> managers = new ArrayList<>();
@@ -198,9 +237,11 @@ public class ManagerDAO implements DAO<Manager> {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                managers.add(new Manager(resultSet.getInt("user_id"), resultSet.getString("username"),
+                managers.add(new Manager(resultSet.getInt("user_id"),
+                        resultSet.getString("username"),
                         resultSet.getString("password"),
-                        resultSet.getString("full_name"), resultSet.getString("email")));
+                        resultSet.getString("full_name"),
+                        resultSet.getString("email")));
             }
 
             logger.info("All managers retrieved successfully.");

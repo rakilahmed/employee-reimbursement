@@ -14,7 +14,7 @@ import com.rakilahmed.models.user.Employee;
 import com.rakilahmed.services.DAO;
 import com.rakilahmed.utils.ConnectionManager;
 
-public class EmployeeDAO implements DAO<Employee> {
+public class EmployeeDAO extends DAO<Employee> {
     private final ConnectionManager connectionManager;
     private final Logger logger = LogManager.getLogger(EmployeeDAO.class);
 
@@ -36,8 +36,9 @@ public class EmployeeDAO implements DAO<Employee> {
         this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
     }
 
-    @Override
-    public int getNextAvailableID() {
+    protected int getNextAvailableID() {
+        logger.info("Getting next available ID.");
+
         try {
             Connection connection = connectionManager.getConnection();
             String sql = "SELECT max(user_id) FROM users";
@@ -57,7 +58,6 @@ public class EmployeeDAO implements DAO<Employee> {
         return -1;
     }
 
-    @Override
     public int insert(Employee employee) {
         logger.info("Inserting employee: " + employee.getUsername());
 
@@ -92,9 +92,9 @@ public class EmployeeDAO implements DAO<Employee> {
         return -1;
     }
 
-    @Override
     public boolean exists(Employee employee) {
         if (employee == null) {
+            logger.error("Error checking if employee exists. Employee is null.");
             return false;
         }
 
@@ -112,10 +112,11 @@ public class EmployeeDAO implements DAO<Employee> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
+                logger.info("Employee exists: " + employee.getUsername());
                 exists = true;
+            } else {
+                logger.info("Employee does not exist: " + employee.getUsername());
             }
-
-            logger.info("Employee verified: " + employee.getUsername());
         } catch (SQLException e) {
             logger.error("Error verifying if employee exists: " + employee.getUsername(), e);
         } finally {
@@ -126,7 +127,48 @@ public class EmployeeDAO implements DAO<Employee> {
         return exists;
     }
 
-    @Override
+    /**
+     * Verifies if the employee credentials are valid.
+     * 
+     * @param username The username of the employee.
+     * @param password The password of the employee.
+     * @return True if the employee credentials are valid, false otherwise.
+     */
+    public boolean verify(String username, String password) {
+        if (username == null || password == null) {
+            logger.error("Error verifying employee credentials. Username or password is null.");
+            return false;
+        }
+
+        logger.info("Verifying if employee credentials are valid: " + username);
+        boolean verified = false;
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND user_type = 'EMPLOYEE'";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, password);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                verified = true;
+                logger.info("Employee credentials verified: " + username);
+            } else {
+                logger.info("Employee credentials not verified: " + username);
+            }
+        } catch (SQLException e) {
+            logger.error("Error verifying if employee credentials are valid: " + username, e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return verified;
+    }
+
     public boolean update(int id, Employee updatedEmployee) {
         logger.info("Updating employee with ID: " + id);
         boolean updated = false;
@@ -155,7 +197,6 @@ public class EmployeeDAO implements DAO<Employee> {
         return updated;
     }
 
-    @Override
     public Employee get(int id) {
         logger.info("Getting employee with ID: " + id);
         Employee employee = null;
@@ -170,9 +211,11 @@ public class EmployeeDAO implements DAO<Employee> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                employee = new Employee(resultSet.getInt("user_id"), resultSet.getString("username"),
+                employee = new Employee(resultSet.getInt("user_id"),
+                        resultSet.getString("username"),
                         resultSet.getString("password"),
-                        resultSet.getString("full_name"), resultSet.getString("email"), true);
+                        resultSet.getString("full_name"),
+                        resultSet.getString("email"), true);
             }
 
             logger.info("Employee retrieved successfully. ID: " + id);
@@ -186,7 +229,6 @@ public class EmployeeDAO implements DAO<Employee> {
         return employee;
     }
 
-    @Override
     public List<Employee> getAll() {
         logger.info("Getting all employees");
         List<Employee> employees = new ArrayList<>();
@@ -200,9 +242,11 @@ public class EmployeeDAO implements DAO<Employee> {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Employee employee = new Employee(resultSet.getInt("user_id"), resultSet.getString("username"),
+                Employee employee = new Employee(resultSet.getInt("user_id"),
+                        resultSet.getString("username"),
                         resultSet.getString("password"),
-                        resultSet.getString("full_name"), resultSet.getString("email"));
+                        resultSet.getString("full_name"),
+                        resultSet.getString("email"));
                 employees.add(employee);
             }
 

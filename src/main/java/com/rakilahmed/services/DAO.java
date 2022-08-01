@@ -2,13 +2,13 @@ package com.rakilahmed.services;
 
 import java.util.List;
 
-public interface DAO<T> {
+public abstract class DAO<T> {
     /**
      * Gets the next available ID from the database.
      * 
      * @return The next available ID.
      */
-    int getNextAvailableID();
+    protected abstract int getNextAvailableID();
 
     /**
      * Inserts a new item into the database.
@@ -16,7 +16,7 @@ public interface DAO<T> {
      * @param item The item to insert.
      * @return The id of the item inserted into the database.
      */
-    int insert(T item);
+    public abstract int insert(T item);
 
     /**
      * Checks if an item exists in the database.
@@ -24,7 +24,7 @@ public interface DAO<T> {
      * @param item The item to check.
      * @return If the item exists in the database.
      */
-    boolean exists(T item);
+    public abstract boolean exists(T item);
 
     /**
      * Updates an item in the database.
@@ -33,7 +33,7 @@ public interface DAO<T> {
      * @param updatedItem The updated item.
      * @return If the item was updated successfully.
      */
-    boolean update(int id, T updatedItem);
+    public abstract boolean update(int id, T updatedItem);
 
     /**
      * Retrieves an item from the database.
@@ -41,12 +41,12 @@ public interface DAO<T> {
      * @param id The id of the item to retrieve.
      * @return The item with the given id.
      */
-    T get(int id);
+    public abstract T get(int id);
 
     /**
      * Retrieves all items from the database.
      * 
      * @return A list of all items in the database.
      */
-    List<T> getAll();
+    public abstract List<T> getAll();
 }
