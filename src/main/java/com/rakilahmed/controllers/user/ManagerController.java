@@ -10,7 +10,6 @@ import com.rakilahmed.services.user.ManagerDAO;
 
 public class ManagerController extends UserController<Manager> {
     private final ManagerDAO managerDAO;
-    private Manager currentManager;
     private final Logger logger = LogManager.getLogger(ManagerController.class);
 
     /**
@@ -20,15 +19,6 @@ public class ManagerController extends UserController<Manager> {
      */
     public ManagerController(ManagerDAO managerDAO) {
         this.managerDAO = managerDAO;
-    }
-
-    /**
-     * Returns the current logged in manager.
-     *
-     * @return The current logged in manager.
-     */
-    public Manager getCurrentManager() {
-        return currentManager;
     }
 
     public String register(Manager manager) {
@@ -47,7 +37,6 @@ public class ManagerController extends UserController<Manager> {
         }
 
         manager.setId(id);
-        currentManager = manager;
 
         logger.info("Manager registered successfully: " + manager.getId());
         return "Manager registered successfully. Manager ID: " + manager.getId();
@@ -62,7 +51,6 @@ public class ManagerController extends UserController<Manager> {
         }
 
         manager.setLoggedIn(true);
-        currentManager = manager;
 
         logger.info("Manager logged in successfully: " + manager.getUsername());
         return "Manager logged in successfully. Manager ID: " + manager.getId();
@@ -77,7 +65,6 @@ public class ManagerController extends UserController<Manager> {
         }
 
         manager.setLoggedIn(false);
-        currentManager = null;
 
         logger.info("Manager logged out successfully: " + manager.getUsername());
         return "Manager logged out successfully. Manager ID: " + manager.getId();
@@ -111,8 +98,8 @@ public class ManagerController extends UserController<Manager> {
 
         if (username == null || username.isEmpty() || password == null || password.isEmpty() || fullName == null
                 || fullName.isEmpty() || email == null || email.isEmpty()) {
-            logger.warn("Manager profile update failed: " + id);
-            return "Manager profile update failed";
+            logger.warn("Username, password, full name, or email is empty: " + id);
+            return "Username, password, name, or email cannot be empty";
         }
 
         Manager manager = managerDAO.get(id);
@@ -132,8 +119,6 @@ public class ManagerController extends UserController<Manager> {
             logger.warn("Manager profile update failed: " + id);
             return "Manager profile update failed";
         }
-
-        currentManager = manager;
 
         logger.info("Manager profile updated successfully: " + id);
         return "Manager profile updated successfully. Manager ID: " + id;

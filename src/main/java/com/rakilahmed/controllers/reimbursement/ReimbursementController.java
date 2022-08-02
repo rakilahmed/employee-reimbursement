@@ -57,17 +57,17 @@ public class ReimbursementController {
 
         if (id <= 0) {
             logger.warn("Reimbursement ID is invalid: " + id);
-            return "Reimbursement ID is invalid";
+            return "Reimbursement id is invalid. Reimbursement ID: " + id;
         }
 
         if (managerId <= 0) {
             logger.warn("Manager ID is invalid: " + managerId);
-            return "Manager ID is invalid";
+            return "Manager id is invalid. Manager ID: " + managerId;
         }
 
-        if (status == null || status.isEmpty()) {
+        if (status == null || status.isEmpty() || !status.equals("APPROVED") && !status.equals("DENIED")) {
             logger.warn("Status is invalid: " + status);
-            return "Status is invalid";
+            return "Status is invalid. Status: " + status;
         }
 
         Reimbursement reimbursement = reimbursementDAO.get(id);

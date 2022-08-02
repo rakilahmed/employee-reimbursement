@@ -10,7 +10,6 @@ import com.rakilahmed.services.user.EmployeeDAO;
 
 public class EmployeeController extends UserController<Employee> {
     private final EmployeeDAO employeeDAO;
-    private Employee currentEmployee;
     private final Logger logger = LogManager.getLogger(EmployeeController.class);
 
     /**
@@ -20,15 +19,6 @@ public class EmployeeController extends UserController<Employee> {
      */
     public EmployeeController(EmployeeDAO employeeDAO) {
         this.employeeDAO = employeeDAO;
-    }
-
-    /**
-     * Returns the current logged in employee.
-     * 
-     * @return The current logged in employee.
-     */
-    public Employee getCurrentEmployee() {
-        return currentEmployee;
     }
 
     public String register(Employee employee) {
@@ -47,7 +37,6 @@ public class EmployeeController extends UserController<Employee> {
         }
 
         employee.setId(id);
-        currentEmployee = employee;
 
         logger.info("Employee registered successfully: " + employee.getId());
         return "Employee registered successfully. Employee ID: " + employee.getId();
@@ -62,7 +51,6 @@ public class EmployeeController extends UserController<Employee> {
         }
 
         employee.setLoggedIn(true);
-        currentEmployee = employee;
 
         logger.info("Employee logged in successfully: " + employee.getUsername());
         return "Employee logged in successfully. Employee ID: " + employee.getId();
@@ -77,7 +65,6 @@ public class EmployeeController extends UserController<Employee> {
         }
 
         employee.setLoggedIn(false);
-        currentEmployee = null;
 
         logger.info("Employee logged out successfully: " + employee.getUsername());
         return "Employee logged out successfully. Employee ID: " + employee.getId();
@@ -111,8 +98,8 @@ public class EmployeeController extends UserController<Employee> {
 
         if (username == null || username.isEmpty() || password == null || password.isEmpty() || fullName == null
                 || fullName.isEmpty() || email == null || email.isEmpty()) {
-            logger.warn("Employee profile update failed: " + id);
-            return "Employee profile update failed. Employee ID: " + id;
+            logger.warn("Username, password, full name, or email is empty: " + id);
+            return "Username, password, full name, and email cannot be empty";
         }
 
         Employee employee = employeeDAO.get(id);
@@ -132,8 +119,6 @@ public class EmployeeController extends UserController<Employee> {
             logger.warn("Employee profile update failed: " + id);
             return "Employee profile update failed";
         }
-
-        currentEmployee = employee;
 
         logger.info("Employee profile updated successfully: " + employee.getUsername());
         return "Employee profile updated successfully. Employee ID: " + employee.getId();
