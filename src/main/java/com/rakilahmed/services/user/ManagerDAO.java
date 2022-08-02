@@ -43,7 +43,6 @@ public class ManagerDAO extends DAO<Manager> {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
 
             return resultSet.getInt(1) + 1;
         } catch (SQLException e) {

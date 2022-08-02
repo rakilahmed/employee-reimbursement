@@ -45,7 +45,6 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
 
             return resultSet.getInt(1) + 1;
         } catch (SQLException e) {

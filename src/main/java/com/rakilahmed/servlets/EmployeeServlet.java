@@ -64,7 +64,7 @@ public class EmployeeServlet extends HttpServlet {
             String message = employeeController.register(employee);
 
             if (message.contains("success")) {
-                resp.getWriter().write(objectMapper.writeValueAsString(employeeController.getCurrentEmployee()));
+                resp.getWriter().write(objectMapper.writeValueAsString(message));
                 resp.setStatus(201);
             } else {
                 resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");

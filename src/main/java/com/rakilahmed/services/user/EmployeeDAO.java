@@ -26,6 +26,15 @@ public class EmployeeDAO extends DAO<Employee> {
     }
 
     /**
+     * Constructor for EmployeeDAO class.
+     * 
+     * @param connectionManager ConnectionManager object.
+     */
+    public EmployeeDAO(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
+
+    /**
      * Parameterized constructor for EmployeeDAO class.
      *
      * @param url      The URL of the database.
@@ -45,7 +54,6 @@ public class EmployeeDAO extends DAO<Employee> {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
 
             return resultSet.getInt(1) + 1;
         } catch (SQLException e) {
