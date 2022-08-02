@@ -36,21 +36,15 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testEmployeeAlreadyExists() {
-        String expected = "Employee already exists";
-        when(employeeDAOMock.exists(employee)).thenReturn(true);
-        String actual = employeeController.register(employee);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void testFailedRegister() {
-        String expected = "Employee registration failed";
-        when(employeeDAOMock.insert(employee)).thenReturn(0);
-        String actual = employeeController.register(employee);
+        String expectedAlreadyExists = "Employee already exists";
+        when(employeeDAOMock.exists(employee)).thenReturn(true);
+        assertEquals(expectedAlreadyExists, employeeController.register(employee));
 
-        assertEquals(expected, actual);
+        String expectedRegistrationFailed = "Employee registration failed";
+        when(employeeDAOMock.exists(employee)).thenReturn(false);
+        when(employeeDAOMock.insert(employee)).thenReturn(0);
+        assertEquals(expectedRegistrationFailed, employeeController.register(employee));
     }
 
     @Test
@@ -63,7 +57,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testEmployeeDoesNotExist() {
+    public void testFailedLogin() {
         String expected = "Employee does not exist";
         when(employeeDAOMock.exists(employee)).thenReturn(false);
         String actual = employeeController.login(employee);
@@ -81,7 +75,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testEmployeeIsNotLoggedIn() {
+    public void testFailedLogout() {
         String expected = "Employee is not logged in";
         employee.setLoggedIn(false);
         String actual = employeeController.logout(employee);
@@ -100,21 +94,14 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testEmployeeIdIsInvalid() {
-        String expected = "Employee id is invalid. Employee ID: 0";
-        String actual = employeeController.viewProfile(0);
+    public void testFailedViewProfile() {
+        String expectedInvalidId = "Employee id is invalid. Employee ID: 0";
+        assertEquals(expectedInvalidId, employeeController.viewProfile(0));
 
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testEmployeeProfileNotFound() {
-        String expected = "Employee profile not found";
+        String expectedProfileNotFound = "Employee profile not found";
         when(employeeDAOMock.get(employee.getId())).thenReturn(employee);
         when(employeeDAOMock.exists(employee)).thenReturn(false);
-        String actual = employeeController.viewProfile(employee.getId());
-
-        assertEquals(expected, actual);
+        assertEquals(expectedProfileNotFound, employeeController.viewProfile(employee.getId()));
     }
 
     @Test
@@ -131,14 +118,27 @@ public class EmployeeControllerTest {
 
     @Test
     public void testFailedUpdateProfile() {
-        String expected = "Employee profile update failed";
+        String expectedInvalidId = "Employee id is invalid. Employee ID: 0";
+        assertEquals(expectedInvalidId,
+                employeeController.updateProfile(0, "test", "pass", "test pass", "test@pass.com"));
+
+        String expectedEmptyValues = "Username, password, full name, and email cannot be empty";
+        assertEquals(expectedEmptyValues, employeeController.updateProfile(employee.getId(), "", "", "", ""));
+
+        String expectedProfileNotFound = "Employee profile not found";
+        when(employeeDAOMock.get(employee.getId())).thenReturn(employee);
+        when(employeeDAOMock.exists(employee)).thenReturn(false);
+        assertEquals(expectedProfileNotFound,
+                employeeController.updateProfile(employee.getId(), "test", "pass", "test pass",
+                        "test@pass.com"));
+
+        String expectedProfileUpdateFailed = "Employee profile update failed";
         when(employeeDAOMock.get(employee.getId())).thenReturn(employee);
         when(employeeDAOMock.exists(employee)).thenReturn(true);
         when(employeeDAOMock.update(employee.getId(), employee)).thenReturn(false);
-        String actual = employeeController.updateProfile(employee.getId(), "test", "pass", "test pass",
-                "test@email.com");
-
-        assertEquals(expected, actual);
+        assertEquals(expectedProfileUpdateFailed,
+                employeeController.updateProfile(employee.getId(), "test", "pass", "test pass",
+                        "test@email.com"));
     }
 
     @Test
@@ -152,6 +152,14 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    public void testFailedGet() {
+        assertEquals(null, employeeController.get(0));
+
+        when(employeeDAOMock.get(employee.getId())).thenReturn(null);
+        assertEquals(null, employeeController.get(employee.getId()));
+    }
+
+    @Test
     public void testSuccessfulGetAll() {
         List<Employee> employees = new ArrayList<>();
         employees.add(employee);
@@ -161,5 +169,13 @@ public class EmployeeControllerTest {
         int actual = employeeController.getAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testFailedGetAll() {
+        List<Employee> employees = new ArrayList<>();
+        when(employeeDAOMock.getAll()).thenReturn(employees);
+
+        assertEquals(null, employeeController.getAll());
     }
 }

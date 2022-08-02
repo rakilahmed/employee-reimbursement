@@ -36,19 +36,52 @@ public class ReimbursementControllerTest {
     }
 
     @Test
-    public void testReimbursementAlreadyExists() {
-        String expected = "Reimbursement already exists";
+    public void testFailedCreate() {
+        String expectedAlreadyExists = "Reimbursement already exists";
         when(reimbursementDAOMock.exists(reimbursement)).thenReturn(true);
+        assertEquals(expectedAlreadyExists, reimbursementController.create(reimbursement));
+
+        String expectedCreationFailed = "Reimbursement creation failed";
+        when(reimbursementDAOMock.exists(reimbursement)).thenReturn(false);
+        when(reimbursementDAOMock.insert(reimbursement)).thenReturn(0);
         String actual = reimbursementController.create(reimbursement);
+
+        assertEquals(expectedCreationFailed, actual);
+    }
+
+    @Test
+    public void testSuccessfulUpdate() {
+        String expected = "Reimbursement updated successfully. Reimbursement ID: 1";
+        when(reimbursementDAOMock.get(reimbursement.getId())).thenReturn(reimbursement);
+        when(reimbursementDAOMock.exists(reimbursement)).thenReturn(true);
+        when(reimbursementDAOMock.update(reimbursement.getId(), reimbursement)).thenReturn(true);
+        String actual = reimbursementController.update(reimbursement.getId(), reimbursement.getManagerId(), "APPROVED");
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testFailedCreate() {
-        String expected = "Reimbursement creation failed";
-        when(reimbursementDAOMock.insert(reimbursement)).thenReturn(0);
-        String actual = reimbursementController.create(reimbursement);
+    public void testFailedUpdate() {
+        String expectedInvalidId = "Reimbursement id is invalid. Reimbursement ID: -1";
+        assertEquals(expectedInvalidId, reimbursementController.update(-1, reimbursement.getManagerId(), "APPROVED"));
+
+        String expectedManagerIdIsInvalid = "Manager id is invalid. Manager ID: -1";
+        assertEquals(expectedManagerIdIsInvalid, reimbursementController.update(reimbursement.getId(), -1, "APPROVED"));
+
+        String expectedStatusIsInvalid = "Status is invalid. Status: INVALID";
+        assertEquals(expectedStatusIsInvalid,
+                reimbursementController.update(reimbursement.getId(), reimbursement.getManagerId(), "INVALID"));
+
+        String expectedReimbursementDoesNotExist = "Reimbursement does not exist";
+        when(reimbursementDAOMock.get(reimbursement.getId())).thenReturn(null);
+        assertEquals(expectedReimbursementDoesNotExist,
+                reimbursementController.update(reimbursement.getId(), reimbursement.getManagerId(), "APPROVED"));
+
+        String expected = "Reimbursement update failed";
+        when(reimbursementDAOMock.get(reimbursement.getId())).thenReturn(reimbursement);
+        when(reimbursementDAOMock.exists(reimbursement)).thenReturn(true);
+        when(reimbursementDAOMock.update(reimbursement.getId(), reimbursement)).thenReturn(false);
+        String actual = reimbursementController.update(reimbursement.getId(), reimbursement.getManagerId(), "APPROVED");
 
         assertEquals(expected, actual);
     }
@@ -64,6 +97,14 @@ public class ReimbursementControllerTest {
     }
 
     @Test
+    public void testFailedGet() {
+        assertEquals(null, reimbursementController.get(0));
+
+        when(reimbursementDAOMock.get(reimbursement.getId())).thenReturn(null);
+        assertEquals(null, reimbursementController.get(reimbursement.getId()));
+    }
+
+    @Test
     public void testSuccessfulGetAll() {
         List<Reimbursement> reimbursements = new ArrayList<>();
         reimbursements.add(reimbursement);
@@ -73,5 +114,13 @@ public class ReimbursementControllerTest {
         int actual = reimbursementController.getAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testFailedGetAll() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        when(reimbursementDAOMock.getAll()).thenReturn(reimbursements);
+
+        assertEquals(null, reimbursementController.getAll());
     }
 }
