@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 public class Reimbursement {
     private int id;
-    private int employeeId;
-    private double amountRequested;
+    private final int employeeId;
+    private final double amountRequested;
     private String dateRequested = LocalDate.now().toString();
     private int managerId = 0;
     private String status = "PENDING";
@@ -81,7 +81,7 @@ public class Reimbursement {
     /**
      * Getter for id.
      * 
-     * @return id
+     * @return id The reimbursement's id.
      */
     public int getId() {
         return id;
@@ -90,7 +90,7 @@ public class Reimbursement {
     /**
      * Getter for employeeId.
      * 
-     * @return employeeId
+     * @return employeeId The employee's id.
      */
     public int getEmployeeId() {
         return employeeId;
@@ -135,7 +135,7 @@ public class Reimbursement {
     /**
      * Setter for id.
      * 
-     * @param id
+     * @param id The reimbursement's id.
      */
     public void setId(int id) {
         this.id = id;
@@ -144,7 +144,7 @@ public class Reimbursement {
     /**
      * Setter for managerId.
      * 
-     * @param managerId
+     * @param managerId The manager's id.
      */
     public void setManagerId(int managerId) {
         this.managerId = managerId;
@@ -153,7 +153,7 @@ public class Reimbursement {
     /**
      * Setter for status.
      * 
-     * @param status
+     * @param status The status of the reimbursement.
      */
     public void setStatus(String status) {
         this.status = status;

@@ -161,7 +161,7 @@ public class EmployeeController extends UserController<Employee> {
         logger.info("Getting all employees");
         List<Employee> employees = employeeDAO.getAll();
 
-        if (employees.isEmpty() || employees == null) {
+        if (employees.isEmpty()) {
             logger.warn("No employees found");
             return null;
         }

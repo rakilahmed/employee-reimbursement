@@ -161,7 +161,7 @@ public class ManagerController extends UserController<Manager> {
         logger.info("Getting all managers");
         List<Manager> managers = managerDAO.getAll();
 
-        if (managers.isEmpty() || managers == null) {
+        if (managers.isEmpty()) {
             logger.warn("No managers found");
             return null;
         }

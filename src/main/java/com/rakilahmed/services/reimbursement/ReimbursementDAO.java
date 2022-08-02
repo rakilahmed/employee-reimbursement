@@ -15,7 +15,7 @@ import com.rakilahmed.services.DAO;
 import com.rakilahmed.utils.ConnectionManager;
 
 public class ReimbursementDAO extends DAO<Reimbursement> {
-    private ConnectionManager connectionManager;
+    private final ConnectionManager connectionManager;
     private final Logger logger = LogManager.getLogger(ReimbursementDAO.class);
 
     /**

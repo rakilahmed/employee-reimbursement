@@ -37,7 +37,7 @@ public class ConnectionManager {
     /**
      * Registers the driver.
      *
-     * @throws SQLException
+     * @throws SQLException if the driver cannot be registered.
      */
     private void registerDriver() throws SQLException {
         if (!driverRegistered) {
@@ -49,7 +49,7 @@ public class ConnectionManager {
      * Creates a connection.
      *
      * @return the connection
-     * @throws SQLException
+     * @throws SQLException if the connection cannot be created.
      */
     public Connection getConnection() throws SQLException {
         if (!driverRegistered) {
@@ -64,9 +64,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Closes the connection.
-     *
-     * @param connection the connection
+     * Closes the current open connection.
      */
     public void close() {
         try {

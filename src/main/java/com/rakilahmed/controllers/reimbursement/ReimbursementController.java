@@ -9,8 +9,8 @@ import com.rakilahmed.models.reimbursement.Reimbursement;
 import com.rakilahmed.services.reimbursement.ReimbursementDAO;
 
 public class ReimbursementController {
-    private ReimbursementDAO reimbursementDAO;
-    private Logger logger = LogManager.getLogger(ReimbursementController.class);
+    private final ReimbursementDAO reimbursementDAO;
+    private final Logger logger = LogManager.getLogger(ReimbursementController.class);
 
     /**
      * Parameterized constructor for EmployeeController class.
@@ -124,7 +124,7 @@ public class ReimbursementController {
 
         List<Reimbursement> reimbursements = reimbursementDAO.getAll();
 
-        if (reimbursements.size() == 0 || reimbursements == null) {
+        if (reimbursements.size() == 0) {
             logger.warn("No reimbursements found");
             return null;
         }
