@@ -3,7 +3,6 @@ package com.rakilahmed.servlets;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +19,14 @@ public class ManagersServlet extends HttpServlet {
     private ManagerController managerController;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         objectMapper = new ObjectMapper();
         managerController = new ManagerController(new ManagerDAO());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         response.setContentType("application/json");
         List<Manager> managers = managerController.getAll();
 

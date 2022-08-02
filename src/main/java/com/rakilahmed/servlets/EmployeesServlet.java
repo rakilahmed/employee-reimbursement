@@ -3,7 +3,6 @@ package com.rakilahmed.servlets;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 
@@ -18,14 +17,14 @@ public class EmployeesServlet extends HttpServlet {
     private EmployeeController employeeController;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         objectMapper = new ObjectMapper();
         employeeController = new EmployeeController(new EmployeeDAO());
     }
 
     @Override
     protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
-            throws javax.servlet.ServletException, IOException {
+            throws IOException {
         response.setContentType("application/json");
         List<Employee> employees = employeeController.getAll();
 

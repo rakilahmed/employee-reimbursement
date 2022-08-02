@@ -3,7 +3,6 @@ package com.rakilahmed.servlets;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,13 +19,13 @@ public class ReimbursementsServlet extends HttpServlet {
     private ReimbursementController reimbursementController;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         objectMapper = new ObjectMapper();
         reimbursementController = new ReimbursementController(new ReimbursementDAO());
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         List<Reimbursement> reimbursements = reimbursementController.getAll();
 

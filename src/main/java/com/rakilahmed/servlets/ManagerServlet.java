@@ -2,7 +2,6 @@ package com.rakilahmed.servlets;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,14 +18,14 @@ public class ManagerServlet extends HttpServlet {
     private ManagerController managerController;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         objectMapper = new ObjectMapper();
         managerController = new ManagerController(new ManagerDAO());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws javax.servlet.ServletException, IOException {
+            throws IOException {
         response.setContentType("application/json");
         String parameter = request.getRequestURI().split("/")[2];
 
@@ -49,7 +48,7 @@ public class ManagerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws javax.servlet.ServletException, IOException {
+            throws IOException {
         resp.setContentType("application/json");
         String parameter = req.getRequestURI().split("/")[2];
 
@@ -82,7 +81,7 @@ public class ManagerServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-            throws javax.servlet.ServletException, IOException {
+            throws IOException {
         resp.setContentType("application/json");
         String idParameter = req.getRequestURI().split("/")[2];
         String operationParameter = req.getRequestURI().split("/")[3];
