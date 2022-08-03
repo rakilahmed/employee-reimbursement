@@ -40,10 +40,8 @@ public class ReimbursementController {
             return "Reimbursement creation failed";
         }
 
-        reimbursement.setId(id);
-
-        logger.info("Reimbursement created successfully: " + reimbursement.getId());
-        return "Reimbursement created successfully. Reimbursement ID: " + reimbursement.getId();
+        logger.info("Reimbursement created successfully: " + id);
+        return "Reimbursement created successfully. Reimbursement ID: " + id;
     }
 
     /**
@@ -115,7 +113,7 @@ public class ReimbursementController {
     }
 
     /**
-     * Returns all reimbursements from the database.
+     * Returns all pending reimbursements from the database.
      * 
      * @return All reimbursements.
      */
@@ -130,6 +128,119 @@ public class ReimbursementController {
         }
 
         logger.info("Reimbursements retrieved successfully");
+        return reimbursements;
+    }
+
+    /**
+     * Returns all pending reimbursements from the database.
+     * 
+     * @return All pending reimbursements.
+     */
+    public List<Reimbursement> getAllPending() {
+        logger.info("Getting all pending reimbursements");
+
+        List<Reimbursement> reimbursements = reimbursementDAO.getAllPending();
+
+        if (reimbursements.size() == 0) {
+            logger.warn("No pending reimbursements found");
+            return null;
+        }
+
+        logger.info("Pending reimbursements retrieved successfully");
+        return reimbursements;
+    }
+
+    /**
+     * Returns all resolved reimbursements from the database.
+     * 
+     * @return All resolved reimbursements.
+     */
+    public List<Reimbursement> getAllResolved() {
+        logger.info("Getting all resolved reimbursements");
+
+        List<Reimbursement> reimbursements = reimbursementDAO.getAllResolved();
+
+        if (reimbursements.size() == 0) {
+            logger.warn("No resolved reimbursements found");
+            return null;
+        }
+
+        logger.info("Resolved reimbursements retrieved successfully");
+        return reimbursements;
+    }
+
+    /**
+     * Returns all reimbursements from the database for the given employee.
+     * 
+     * @param employeeId The id of the employee to get reimbursements for.
+     * @return All reimbursements for the employee.
+     */
+    public List<Reimbursement> getAllForEmployee(int employeeId) {
+        if (employeeId <= 0) {
+            logger.warn("Employee ID is invalid: " + employeeId);
+            return null;
+        }
+
+        logger.info("Getting all reimbursements for employee. Employee ID: " + employeeId);
+
+        List<Reimbursement> reimbursements = reimbursementDAO.getAllForEmployee(employeeId);
+
+        if (reimbursements.size() == 0) {
+            logger.warn("No reimbursements found for employee: " + employeeId);
+            return null;
+        }
+
+        logger.info("Reimbursements retrieved successfully for employee: " + employeeId);
+        return reimbursements;
+    }
+
+    /**
+     * Returns all pending reimbursements from the database for the given employee.
+     * 
+     * @param employeeId The id of the employee to get reimbursements for.
+     * @return All pending reimbursements for the employee.
+     */
+    public List<Reimbursement> getAllPendingForEmployee(int employeeId) {
+        if (employeeId <= 0) {
+            logger.warn("Employee ID is invalid: " + employeeId);
+            return null;
+        }
+
+        logger.info("Getting all pending reimbursements for employee. Employee ID: " + employeeId);
+
+        List<Reimbursement> reimbursements = reimbursementDAO.getAllPendingForEmployee(employeeId);
+
+        if (reimbursements.size() == 0) {
+            logger.warn("No pending reimbursements found for employee: " + employeeId);
+            return null;
+        }
+
+        logger.info("Pending reimbursements retrieved successfully for employee: " + employeeId);
+        return reimbursements;
+    }
+
+    /**
+     * Returns all resolved reimbursements from the database for the given employee.
+     * 
+     * @param employeeId The id of the employee to get reimbursements for.
+     * @return All resolved reimbursements for the employee.
+     */
+    public List<Reimbursement> getAllResolvedForEmployee(int employeeId) {
+        if (employeeId <= 0) {
+            logger.warn("Employee ID is invalid: " + employeeId);
+            return null;
+        }
+
+        logger.info("Getting all resolved reimbursements for employee. Employee ID: " + employeeId);
+
+        List<Reimbursement> reimbursements = reimbursementDAO.getAllResolvedForEmployee(employeeId);
+
+        if (reimbursements.size() == 0) {
+            logger.warn("No resolved reimbursements found for employee: " + employeeId);
+            return null;
+        }
+
+        logger.info("Resolved reimbursements retrieved successfully for employee: " + employeeId);
         return reimbursements;
     }
 }

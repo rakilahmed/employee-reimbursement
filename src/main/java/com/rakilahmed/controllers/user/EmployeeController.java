@@ -21,53 +21,37 @@ public class EmployeeController extends UserController<Employee> {
         this.employeeDAO = employeeDAO;
     }
 
-    public String register(Employee employee) {
+    public int register(Employee employee) {
         logger.info("Registering employee: " + employee.getUsername());
 
         if (employee.getId() > 0 && employeeDAO.exists(employee)) {
             logger.warn("Employee already exists: " + employee.getUsername());
-            return "Employee already exists";
+            return -1;
         }
 
         int id = employeeDAO.insert(employee);
 
         if (id <= 0) {
             logger.warn("Employee registration failed: " + employee.getUsername());
-            return "Employee registration failed";
+            return -1;
         }
 
-        employee.setId(id);
-
-        logger.info("Employee registered successfully: " + employee.getId());
-        return "Employee registered successfully. Employee ID: " + employee.getId();
+        logger.info("Employee registered successfully: " + id);
+        return id;
     }
 
-    public String login(Employee employee) {
-        logger.info("Logging in employee: " + employee.getUsername());
+    public int login(String username, String password) {
+        logger.info("Logging in employee: " + username);
 
-        if (!employeeDAO.exists(employee)) {
-            logger.warn("Employee does not exist: " + employee.getUsername());
-            return "Employee does not exist";
+        int id = employeeDAO.verify(username, password);
+
+        if (id <= 0) {
+            logger.warn("Employee credentials are incorrect: " + username);
+            return -1;
         }
 
-        employee.setLoggedIn(true);
-
-        logger.info("Employee logged in successfully: " + employee.getUsername());
-        return "Employee logged in successfully. Employee ID: " + employee.getId();
-    }
-
-    public String logout(Employee employee) {
-        logger.info("Logging out employee: " + employee.getUsername());
-
-        if (!employee.isLoggedIn()) {
-            logger.warn("Employee is not logged in: " + employee.getUsername());
-            return "Employee is not logged in";
-        }
-
-        employee.setLoggedIn(false);
-
-        logger.info("Employee logged out successfully: " + employee.getUsername());
-        return "Employee logged out successfully. Employee ID: " + employee.getId();
+        logger.info("Employee logged in successfully: " + username);
+        return id;
     }
 
     public String viewProfile(int id) {
@@ -113,7 +97,6 @@ public class EmployeeController extends UserController<Employee> {
         employee.setPassword(password);
         employee.setFullName(fullName);
         employee.setEmail(email);
-        employee.setLoggedIn(true);
 
         if (!employeeDAO.update(employee.getId(), employee)) {
             logger.warn("Employee profile update failed: " + id);

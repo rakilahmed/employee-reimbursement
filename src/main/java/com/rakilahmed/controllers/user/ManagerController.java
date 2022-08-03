@@ -5,11 +5,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.rakilahmed.models.user.Employee;
 import com.rakilahmed.models.user.Manager;
+import com.rakilahmed.services.user.EmployeeDAO;
 import com.rakilahmed.services.user.ManagerDAO;
 
 public class ManagerController extends UserController<Manager> {
     private final ManagerDAO managerDAO;
+    private final EmployeeController employeeController;
     private final Logger logger = LogManager.getLogger(ManagerController.class);
 
     /**
@@ -19,55 +22,59 @@ public class ManagerController extends UserController<Manager> {
      */
     public ManagerController(ManagerDAO managerDAO) {
         this.managerDAO = managerDAO;
+        this.employeeController = new EmployeeController(new EmployeeDAO());
     }
 
-    public String register(Manager manager) {
+    public int register(Manager manager) {
         logger.info("Registering manager: " + manager.getUsername());
 
         if (manager.getId() > 0 && managerDAO.exists(manager)) {
             logger.warn("Manager already exists: " + manager.getUsername());
-            return "Manager already exists";
+            return -1;
         }
 
         int id = managerDAO.insert(manager);
 
         if (id <= 0) {
             logger.warn("Manager registration failed: " + manager.getUsername());
-            return "Manager registration failed";
+            return -1;
         }
 
-        manager.setId(id);
-
-        logger.info("Manager registered successfully: " + manager.getId());
-        return "Manager registered successfully. Manager ID: " + manager.getId();
+        logger.info("Manager registered successfully: " + id);
+        return id;
     }
 
-    public String login(Manager manager) {
-        logger.info("Logging in manager: " + manager.getUsername());
+    /**
+     * Manager registers an employee.
+     * 
+     * @param employee The employee to be registered.
+     * @return String indicating success or failure.
+     */
+    public String registerEmployee(Employee employee) {
+        logger.info("Registering employee: " + employee.getUsername());
+        int id = employeeController.register(employee);
 
-        if (!managerDAO.exists(manager)) {
-            logger.warn("Manager does not exist: " + manager.getUsername());
-            return "Manager does not exist";
+        if (id > 0) {
+            logger.info("Employee registered successfully: " + id);
+            return "Employee registered successfully. Employee ID: " + id;
         }
 
-        manager.setLoggedIn(true);
-
-        logger.info("Manager logged in successfully: " + manager.getUsername());
-        return "Manager logged in successfully. Manager ID: " + manager.getId();
+        logger.warn("Employee registration failed: " + employee.getUsername());
+        return "Employee registration failed";
     }
 
-    public String logout(Manager manager) {
-        logger.info("Logging out manager: " + manager.getUsername());
+    public int login(String username, String password) {
+        logger.info("Logging in manager: " + username);
 
-        if (!manager.isLoggedIn()) {
-            logger.warn("Manager is not logged in: " + manager.getUsername());
-            return "Manager is not logged in";
+        int id = managerDAO.verify(username, password);
+
+        if (id <= 0) {
+            logger.warn("Manager credentials are incorrect: " + username);
+            return -1;
         }
 
-        manager.setLoggedIn(false);
-
-        logger.info("Manager logged out successfully: " + manager.getUsername());
-        return "Manager logged out successfully. Manager ID: " + manager.getId();
+        logger.info("Manager logged in successfully: " + username);
+        return id;
     }
 
     public String viewProfile(int id) {
@@ -113,7 +120,6 @@ public class ManagerController extends UserController<Manager> {
         manager.setPassword(password);
         manager.setFullName(fullName);
         manager.setEmail(email);
-        manager.setLoggedIn(true);
 
         if (!managerDAO.update(manager.getId(), manager)) {
             logger.warn("Manager profile update failed: " + id);
@@ -153,5 +159,23 @@ public class ManagerController extends UserController<Manager> {
 
         logger.info("All managers found successfully");
         return managers;
+    }
+
+    /**
+     * Retrieves all registered employees.
+     * 
+     * @return List of employees.
+     */
+    public List<Employee> getAllEmployees() {
+        logger.info("Getting all employees");
+        List<Employee> employees = employeeController.getAll();
+
+        if (employees.isEmpty()) {
+            logger.warn("No employees found");
+            return null;
+        }
+
+        logger.info("All employees found successfully");
+        return employees;
     }
 }
