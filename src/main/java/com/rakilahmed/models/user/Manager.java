@@ -11,6 +11,16 @@ public class Manager extends User {
     /**
      * Parameterized constructor for Manager class.
      * 
+     * @param username
+     * @param password
+     */
+    public Manager(String username, String password) {
+        super(username, password);
+    }
+
+    /**
+     * Parameterized constructor for Manager class.
+     * 
      * @param username    The username of the manager.
      * @param password    The password of the manager.
      * @param managerName The manager's name.
@@ -31,20 +41,6 @@ public class Manager extends User {
      */
     public Manager(int id, String username, String password, String managerName, String email) {
         super(id, username, password, managerName, email);
-    }
-
-    /**
-     * Parameterized constructor for Manager class.
-     * 
-     * @param id          The manager's id.
-     * @param username    The manager's username.
-     * @param password    The manager's password.
-     * @param managerName The manager's name.
-     * @param email       The manager's email.
-     * @param isLoggedIn  Whether the manager is logged in.
-     */
-    public Manager(int id, String username, String password, String managerName, String email, boolean isLoggedIn) {
-        super(id, username, password, managerName, email, isLoggedIn);
     }
 
     @Override

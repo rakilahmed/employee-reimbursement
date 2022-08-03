@@ -11,6 +11,16 @@ public class Employee extends User {
     /**
      * Parameterized constructor for Employee class.
      * 
+     * @param username
+     * @param password
+     */
+    public Employee(String username, String password) {
+        super(username, password);
+    }
+
+    /**
+     * Parameterized constructor for Employee class.
+     * 
      * @param username     The username of the employee.
      * @param password     The password of the employee.
      * @param employeeName The employee's name.
@@ -31,20 +41,6 @@ public class Employee extends User {
      */
     public Employee(int id, String username, String password, String employeeName, String email) {
         super(id, username, password, employeeName, email);
-    }
-
-    /**
-     * Parameterized constructor for Employee class.
-     * 
-     * @param id           The employee's id.
-     * @param username     The employee's username.
-     * @param password     The employee's password.
-     * @param employeeName The employee's name.
-     * @param email        The employee's email.
-     * @param isLoggedIn   Whether the employee is logged in.
-     */
-    public Employee(int id, String username, String password, String employeeName, String email, boolean isLoggedIn) {
-        super(id, username, password, employeeName, email, isLoggedIn);
     }
 
     @Override

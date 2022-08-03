@@ -6,7 +6,6 @@ public abstract class User {
     private String password;
     private String fullName;
     private String email;
-    private boolean isLoggedIn;
 
     /**
      * Default constructor for User class.
@@ -17,7 +16,20 @@ public abstract class User {
         this.password = "";
         this.fullName = "";
         this.email = "";
-        this.isLoggedIn = false;
+    }
+
+    /**
+     * Parameterized constructor for User class.
+     * 
+     * @param username
+     * @param password
+     */
+    public User(String username, String password) {
+        this.id = 0;
+        this.username = username;
+        this.password = password;
+        this.fullName = "";
+        this.email = "";
     }
 
     /**
@@ -33,7 +45,6 @@ public abstract class User {
         this.password = password;
         this.fullName = fullName;
         this.email = email;
-        this.isLoggedIn = false;
     }
 
     /**
@@ -51,26 +62,6 @@ public abstract class User {
         this.password = password;
         this.fullName = fullName;
         this.email = email;
-        this.isLoggedIn = false;
-    }
-
-    /**
-     * Parameterized constructor for User class.
-     * 
-     * @param id         The user's id.
-     * @param username   The user's username.
-     * @param password   The user's password.
-     * @param fullName   The user's full name.
-     * @param email      The user's email.
-     * @param isLoggedIn Whether the user is logged in.
-     */
-    public User(int id, String username, String password, String fullName, String email, boolean isLoggedIn) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.email = email;
-        this.isLoggedIn = isLoggedIn;
     }
 
     /**
@@ -119,15 +110,6 @@ public abstract class User {
     }
 
     /**
-     * Getter for isLoggedIn.
-     * 
-     * @return isLoggedIn
-     */
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-
-    /**
      * Setter for id.
      * 
      * @param id The user's id.
@@ -170,14 +152,5 @@ public abstract class User {
      */
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    /**
-     * Setter for isLoggedIn.
-     * 
-     * @param isLoggedIn Whether the user is logged in.
-     */
-    public void setLoggedIn(boolean isLoggedIn) {
-        this.isLoggedIn = isLoggedIn;
     }
 }
