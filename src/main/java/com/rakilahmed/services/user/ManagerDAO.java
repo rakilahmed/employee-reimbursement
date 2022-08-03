@@ -26,13 +26,11 @@ public class ManagerDAO extends DAO<Manager> {
 
     /**
      * Parameterized constructor for ManagerDAO class.
-     *
-     * @param url      The URL of the database.
-     * @param username The username of the database.
-     * @param password The password of the database.
+     * 
+     * @param connectionManager The connection manager to be used.
      */
-    public ManagerDAO(String url, String username, String password) {
-        this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
+    public ManagerDAO(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     public int insert(Manager manager) {
@@ -95,8 +93,6 @@ public class ManagerDAO extends DAO<Manager> {
             if (resultSet.next()) {
                 verified = true;
                 logger.info("Manager credentials verified successfully.");
-            } else {
-                logger.info("Manager credentials verification failed.");
             }
         } catch (SQLException e) {
             logger.error("Error verifying manager credentials.", e);
