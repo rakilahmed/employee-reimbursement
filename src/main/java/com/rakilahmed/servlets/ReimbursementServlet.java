@@ -63,7 +63,7 @@ public class ReimbursementServlet extends HttpServlet {
             String message = reimbursementController.create(reimbursement);
 
             if (message.contains("success")) {
-                resp.getWriter().write(objectMapper.writeValueAsString(reimbursement));
+                resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
                 resp.setStatus(201);
             } else {
                 resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");

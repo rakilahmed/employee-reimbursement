@@ -66,7 +66,7 @@ public class ManagerServlet extends HttpServlet {
             String message = managerController.register(manager);
 
             if (message.contains("success")) {
-                resp.getWriter().write(objectMapper.writeValueAsString(message));
+                resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
                 resp.setStatus(201);
             } else {
                 resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
