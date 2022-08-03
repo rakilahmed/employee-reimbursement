@@ -69,16 +69,15 @@ public class ManagerDAO extends DAO<Manager> {
      * 
      * @param username The username of the manager.
      * @param password The password of the manager.
-     * @return True if the manager credentials are valid, false otherwise.
+     * @return The id of the manager if the credentials are valid, -1 otherwise.
      */
-    public boolean verify(String username, String password) {
+    public int verify(String username, String password) {
         if (username == null || password == null) {
             logger.error("Error verifying manager credentials. Username or password is null.");
-            return false;
+            return -1;
         }
 
         logger.info("Verifying manager credentials. Username: " + username);
-        boolean verified = false;
 
         try {
             Connection connection = connectionManager.getConnection();
@@ -91,8 +90,8 @@ public class ManagerDAO extends DAO<Manager> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                verified = true;
                 logger.info("Manager credentials verified successfully.");
+                return resultSet.getInt("user_id");
             }
         } catch (SQLException e) {
             logger.error("Error verifying manager credentials.", e);
@@ -101,7 +100,7 @@ public class ManagerDAO extends DAO<Manager> {
             logger.info("Connection closed.");
         }
 
-        return verified;
+        return -1;
     }
 
     public boolean exists(Manager manager) {
@@ -184,7 +183,7 @@ public class ManagerDAO extends DAO<Manager> {
                         resultSet.getString("username"),
                         resultSet.getString("password"),
                         resultSet.getString("full_name"),
-                        resultSet.getString("email"), true);
+                        resultSet.getString("email"));
             }
 
             logger.info("Manager retrieved successfully. ID: " + id);

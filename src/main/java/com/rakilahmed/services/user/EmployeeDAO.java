@@ -102,16 +102,15 @@ public class EmployeeDAO extends DAO<Employee> {
      * 
      * @param username The username of the employee.
      * @param password The password of the employee.
-     * @return True if the employee credentials are valid, false otherwise.
+     * @return The id of the employee if the credentials are valid, -1 otherwise.
      */
-    public boolean verify(String username, String password) {
+    public int verify(String username, String password) {
         if (username == null || password == null) {
             logger.error("Error verifying employee credentials. Username or password is null.");
-            return false;
+            return -1;
         }
 
         logger.info("Verifying if employee credentials are valid: " + username);
-        boolean verified = false;
 
         try {
             Connection connection = connectionManager.getConnection();
@@ -124,8 +123,8 @@ public class EmployeeDAO extends DAO<Employee> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                verified = true;
                 logger.info("Employee credentials verified: " + username);
+                return resultSet.getInt("user_id");
             }
         } catch (SQLException e) {
             logger.error("Error verifying if employee credentials are valid: " + username, e);
@@ -134,7 +133,7 @@ public class EmployeeDAO extends DAO<Employee> {
             logger.info("Connection closed.");
         }
 
-        return verified;
+        return -1;
     }
 
     public boolean update(int id, Employee updatedEmployee) {
@@ -183,7 +182,7 @@ public class EmployeeDAO extends DAO<Employee> {
                         resultSet.getString("username"),
                         resultSet.getString("password"),
                         resultSet.getString("full_name"),
-                        resultSet.getString("email"), true);
+                        resultSet.getString("email"));
             }
 
             logger.info("Employee retrieved successfully. ID: " + id);

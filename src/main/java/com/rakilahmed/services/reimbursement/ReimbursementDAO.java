@@ -194,4 +194,183 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
 
         return reimbursements;
     }
+
+    /**
+     * Gets all pending reimbursements.
+     * 
+     * @return A list of all pending reimbursements.
+     */
+    public List<Reimbursement> getAllPending() {
+        logger.info("Getting all pending reimbursements.");
+        List<Reimbursement> reimbursements = new ArrayList<>();
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM reimbursements WHERE status = 'PENDING' ORDER BY reimbursement_id";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                reimbursements.add(new Reimbursement(resultSet.getInt("reimbursement_id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getDouble("amount"),
+                        resultSet.getInt("manager_id"),
+                        resultSet.getString("status")));
+            }
+            logger.info("All pending reimbursements retrieved.");
+        } catch (SQLException e) {
+            logger.error("Error getting all pending reimbursements.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return reimbursements;
+    }
+
+    /**
+     * Gets all resolved reimbursements.
+     * 
+     * @return A list of all resolved reimbursements.
+     */
+    public List<Reimbursement> getAllResolved() {
+        logger.info("Getting all resolved reimbursements.");
+        List<Reimbursement> reimbursements = new ArrayList<>();
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM reimbursements WHERE status IN ('APPROVED', 'DENIED') ORDER BY reimbursement_id";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                reimbursements.add(new Reimbursement(resultSet.getInt("reimbursement_id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getDouble("amount"),
+                        resultSet.getInt("manager_id"),
+                        resultSet.getString("status")));
+            }
+            logger.info("All resolved reimbursements retrieved.");
+        } catch (SQLException e) {
+            logger.error("Error getting all resolved reimbursements.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return reimbursements;
+    }
+
+    /**
+     * Gets all reimbursements for an employee.
+     * 
+     * @param employeeId The ID of the employee.
+     * @return A list of all reimbursements for the employee.
+     */
+    public List<Reimbursement> getAllForEmployee(int employeeId) {
+        logger.info("Getting all reimbursements for employee. ID: " + employeeId);
+        List<Reimbursement> reimbursements = new ArrayList<>();
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM reimbursements WHERE user_id = ? ORDER BY reimbursement_id";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, employeeId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                reimbursements.add(new Reimbursement(resultSet.getInt("reimbursement_id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getDouble("amount"),
+                        resultSet.getInt("manager_id"),
+                        resultSet.getString("status")));
+            }
+            logger.info("All reimbursements retrieved for employee. ID: " + employeeId);
+        } catch (SQLException e) {
+            logger.error("Error getting all reimbursements for employee.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return reimbursements;
+    }
+
+    /**
+     * Gets all pending reimbursements for an employee.
+     * 
+     * @param employeeId The ID of the employee.
+     * @return A list of all pending reimbursements for the employee.
+     */
+    public List<Reimbursement> getAllPendingForEmployee(int employeeId) {
+        logger.info("Getting all pending reimbursements for employee. ID: " + employeeId);
+        List<Reimbursement> reimbursements = new ArrayList<>();
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM reimbursements WHERE user_id = ? AND status = 'PENDING' ORDER BY reimbursement_id";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, employeeId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                reimbursements.add(new Reimbursement(resultSet.getInt("reimbursement_id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getDouble("amount"),
+                        resultSet.getInt("manager_id"),
+                        resultSet.getString("status")));
+            }
+            logger.info("All pending reimbursements retrieved for employee. ID: " + employeeId);
+        } catch (SQLException e) {
+            logger.error("Error getting all pending reimbursements for employee.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return reimbursements;
+    }
+
+    /**
+     * Gets all resolved reimbursements for an employee.
+     * 
+     * @param employeeId The ID of the employee.
+     * @return A list of all resolved reimbursements for the employee.
+     */
+    public List<Reimbursement> getAllResolvedForEmployee(int employeeId) {
+        logger.info("Getting all resolved reimbursements for employee. ID: " + employeeId);
+        List<Reimbursement> reimbursements = new ArrayList<>();
+
+        try {
+            Connection connection = connectionManager.getConnection();
+            String sql = "SELECT * FROM reimbursements WHERE user_id = ? AND status IN ('APPROVED', 'DENIED') ORDER BY reimbursement_id";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, employeeId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                reimbursements.add(new Reimbursement(resultSet.getInt("reimbursement_id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getDouble("amount"),
+                        resultSet.getInt("manager_id"),
+                        resultSet.getString("status")));
+            }
+            logger.info("All resolved reimbursements retrieved for employee. ID: " + employeeId);
+        } catch (SQLException e) {
+            logger.error("Error getting all resolved reimbursements for employee.", e);
+        } finally {
+            connectionManager.close();
+            logger.info("Connection closed.");
+        }
+
+        return reimbursements;
+    }
 }

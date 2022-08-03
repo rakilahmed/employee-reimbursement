@@ -123,4 +123,123 @@ public class ReimbursementControllerTest {
 
         assertEquals(null, reimbursementController.getAll());
     }
+
+    @Test
+    public void testSuccessfulGetAllPending() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        reimbursements.add(reimbursement);
+
+        int expected = reimbursements.size();
+        when(reimbursementDAOMock.getAllPending()).thenReturn(reimbursements);
+        int actual = reimbursementController.getAllPending().size();
+
+        assertEquals(expected, actual);
+        assertEquals(reimbursement.getStatus(), reimbursements.get(0).getStatus());
+    }
+
+    @Test
+    public void testFailedGetAllPending() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        when(reimbursementDAOMock.getAllPending()).thenReturn(reimbursements);
+
+        assertEquals(null, reimbursementController.getAllPending());
+    }
+
+    @Test
+    public void testSuccessfulGetAllResolved() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+
+        reimbursement.setManagerId(1);
+        reimbursement.setStatus("APPROVED");
+
+        when(reimbursementDAOMock.get(reimbursement.getId())).thenReturn(reimbursement);
+        when(reimbursementDAOMock.exists(reimbursement)).thenReturn(true);
+        when(reimbursementDAOMock.update(reimbursement.getId(), reimbursement)).thenReturn(true);
+        reimbursementController.update(1, 1, "APPROVED");
+        reimbursements.add(reimbursement);
+
+        int expected = reimbursements.size();
+        when(reimbursementDAOMock.getAllResolved()).thenReturn(reimbursements);
+        int actual = reimbursementController.getAllResolved().size();
+
+        assertEquals(expected, actual);
+        assertEquals(reimbursement.getStatus(), reimbursements.get(0).getStatus());
+    }
+
+    @Test
+    public void testFailedGetAllResolved() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        when(reimbursementDAOMock.getAllResolved()).thenReturn(reimbursements);
+
+        assertEquals(null, reimbursementController.getAllResolved());
+    }
+
+    @Test
+    public void testSuccessfulGetAllForEmployee() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        reimbursements.add(reimbursement);
+
+        int expected = reimbursements.size();
+        when(reimbursementDAOMock.getAllForEmployee(1)).thenReturn(reimbursements);
+        int actual = reimbursementController.getAllForEmployee(1).size();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testFailedGetAllForEmployee() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        when(reimbursementDAOMock.getAllForEmployee(1)).thenReturn(reimbursements);
+
+        assertEquals(null, reimbursementController.getAllForEmployee(1));
+    }
+
+    @Test
+    public void testSuccessfulGetAllPendingForEmployee() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        reimbursements.add(reimbursement);
+
+        int expected = reimbursements.size();
+        when(reimbursementDAOMock.getAllPendingForEmployee(1)).thenReturn(reimbursements);
+        int actual = reimbursementController.getAllPendingForEmployee(1).size();
+
+        assertEquals(expected, actual);
+        assertEquals(reimbursement.getStatus(), reimbursements.get(0).getStatus());
+    }
+
+    @Test
+    public void testFailedGetAllPendingForEmployee() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        when(reimbursementDAOMock.getAllPendingForEmployee(1)).thenReturn(reimbursements);
+
+        assertEquals(null, reimbursementController.getAllPendingForEmployee(1));
+    }
+
+    @Test
+    public void testSuccessfulGetAllResolvedForEmployee() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        reimbursement.setManagerId(1);
+        reimbursement.setStatus("APPROVED");
+
+        when(reimbursementDAOMock.get(reimbursement.getId())).thenReturn(reimbursement);
+        when(reimbursementDAOMock.exists(reimbursement)).thenReturn(true);
+        when(reimbursementDAOMock.update(reimbursement.getId(), reimbursement)).thenReturn(true);
+        reimbursementController.update(1, 1, "APPROVED");
+        reimbursements.add(reimbursement);
+
+        int expected = reimbursements.size();
+        when(reimbursementDAOMock.getAllResolvedForEmployee(1)).thenReturn(reimbursements);
+        int actual = reimbursementController.getAllResolvedForEmployee(1).size();
+
+        assertEquals(expected, actual);
+        assertEquals(reimbursement.getStatus(), reimbursements.get(0).getStatus());
+    }
+
+    @Test
+    public void testFailedGetAllResolvedForEmployee() {
+        List<Reimbursement> reimbursements = new ArrayList<>();
+        when(reimbursementDAOMock.getAllResolvedForEmployee(1)).thenReturn(reimbursements);
+
+        assertEquals(null, reimbursementController.getAllResolvedForEmployee(1));
+    }
 }
