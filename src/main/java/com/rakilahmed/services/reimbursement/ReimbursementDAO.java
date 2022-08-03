@@ -15,14 +15,13 @@ import com.rakilahmed.services.DAO;
 import com.rakilahmed.utils.ConnectionManager;
 
 public class ReimbursementDAO extends DAO<Reimbursement> {
-    private final ConnectionManager connectionManager;
+    private ConnectionManager connectionManager = new ConnectionManager();
     private final Logger logger = LogManager.getLogger(ReimbursementDAO.class);
 
     /**
      * Default constructor for ReimbursementDAO class.
      */
     public ReimbursementDAO() {
-        this.connectionManager = new ConnectionManager();
     }
 
     /**
@@ -36,50 +35,28 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
         this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
     }
 
-    protected int getNextAvailableID() {
-        logger.info("Getting next available ID.");
-
-        try {
-            Connection connection = connectionManager.getConnection();
-            String sql = "SELECT max(reimbursement_id) FROM reimbursements";
-
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-
-            return resultSet.getInt(1) + 1;
-        } catch (SQLException e) {
-            logger.error("Error getting next available ID.", e);
-        } finally {
-            connectionManager.close();
-            logger.info("Connection closed.");
-        }
-
-        return -1;
-    }
-
     public int insert(Reimbursement reimbursement) {
         logger.info("Inserting reimbursement. Employee ID: " + reimbursement.getEmployeeId());
 
+        System.out.println(reimbursement.toString());
+
         try {
             Connection connection = connectionManager.getConnection();
-            String sql = "INSERT INTO reimbursements (reimbursement_id, user_id, amount, date, manager_id, status) VALUES (?, ?, ?, ?, ?, ?) RETURNING reimbursement_id";
+            String sql = "INSERT INTO reimbursements (user_id, amount, date, manager_id, status) VALUES (?, ?, ?, ?, ?) RETURNING reimbursement_id";
 
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, getNextAvailableID());
-            statement.setInt(2, reimbursement.getEmployeeId());
-            statement.setDouble(3, reimbursement.getAmountRequested());
-            statement.setString(4, reimbursement.getDateRequested());
-            statement.setInt(5, reimbursement.getManagerId());
-            statement.setString(6, reimbursement.getStatus());
+            statement.setInt(1, reimbursement.getEmployeeId());
+            statement.setDouble(2, reimbursement.getAmountRequested());
+            statement.setString(3, reimbursement.getDateRequested());
+            statement.setInt(4, reimbursement.getManagerId());
+            statement.setString(5, reimbursement.getStatus());
 
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                int reimbursementId = resultSet.getInt("reimbursement_id");
-                logger.info("Reimbursement inserted. ID: " + reimbursementId);
-                return reimbursementId;
-            } else {
-                logger.error("Reimbursement insertion failed.");
+                int id = resultSet.getInt("reimbursement_id");
+                logger.info("Reimbursement inserted with ID: " + id);
+                return id;
             }
         } catch (SQLException e) {
             logger.error("Error inserting reimbursement.", e);

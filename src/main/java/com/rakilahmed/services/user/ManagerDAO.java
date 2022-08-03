@@ -15,14 +15,13 @@ import com.rakilahmed.services.DAO;
 import com.rakilahmed.utils.ConnectionManager;
 
 public class ManagerDAO extends DAO<Manager> {
-    private final ConnectionManager connectionManager;
+    private ConnectionManager connectionManager = new ConnectionManager();
     private final Logger logger = LogManager.getLogger(EmployeeDAO.class);
 
     /**
      * Default constructor for ManagerDAO class.
      */
     public ManagerDAO() {
-        this.connectionManager = new ConnectionManager();
     }
 
     /**
@@ -36,39 +35,19 @@ public class ManagerDAO extends DAO<Manager> {
         this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
     }
 
-    protected int getNextAvailableID() {
-        try {
-            Connection connection = connectionManager.getConnection();
-            String sql = "SELECT max(user_id) FROM users";
-
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-
-            return resultSet.getInt(1) + 1;
-        } catch (SQLException e) {
-            logger.error("Error getting next available ID.", e);
-        } finally {
-            connectionManager.close();
-            logger.info("Connection closed.");
-        }
-
-        return -1;
-    }
-
     public int insert(Manager manager) {
         logger.info("Inserting manager: " + manager.getUsername());
 
         try {
             Connection connection = connectionManager.getConnection();
-            String sql = "INSERT INTO users (user_id, username, password, full_name, email, user_type) VALUES (?, ?, ?, ?, ?, ?) RETURNING user_id";
+            String sql = "INSERT INTO users (username, password, full_name, email, user_type) VALUES (?, ?, ?, ?, ?) RETURNING user_id";
 
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, getNextAvailableID());
-            statement.setString(2, manager.getUsername());
-            statement.setString(3, manager.getPassword());
-            statement.setString(4, manager.getFullName());
-            statement.setString(5, manager.getEmail());
-            statement.setString(6, "MANAGER");
+            statement.setString(1, manager.getUsername());
+            statement.setString(2, manager.getPassword());
+            statement.setString(3, manager.getFullName());
+            statement.setString(4, manager.getEmail());
+            statement.setString(5, "MANAGER");
 
             ResultSet resultSet = statement.executeQuery();
 

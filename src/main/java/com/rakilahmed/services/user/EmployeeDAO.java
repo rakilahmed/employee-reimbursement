@@ -15,14 +15,13 @@ import com.rakilahmed.services.DAO;
 import com.rakilahmed.utils.ConnectionManager;
 
 public class EmployeeDAO extends DAO<Employee> {
-    private final ConnectionManager connectionManager;
+    private ConnectionManager connectionManager = new ConnectionManager();
     private final Logger logger = LogManager.getLogger(EmployeeDAO.class);
 
     /**
      * Default constructor for EmployeeDAO class.
      */
     public EmployeeDAO() {
-        this.connectionManager = new ConnectionManager();
     }
 
     /**
@@ -34,61 +33,26 @@ public class EmployeeDAO extends DAO<Employee> {
         this.connectionManager = connectionManager;
     }
 
-    /**
-     * Parameterized constructor for EmployeeDAO class.
-     *
-     * @param url      The URL of the database.
-     * @param username The username of the database.
-     * @param password The password of the database.
-     */
-    public EmployeeDAO(String url, String username, String password) {
-        this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
-    }
-
-    protected int getNextAvailableID() {
-        logger.info("Getting next available ID.");
-
-        try {
-            Connection connection = connectionManager.getConnection();
-            String sql = "SELECT max(user_id) FROM users";
-
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-
-            return resultSet.getInt(1) + 1;
-        } catch (SQLException e) {
-            logger.error("Error getting next available ID.", e);
-        } finally {
-            connectionManager.close();
-            logger.info("Connection closed.");
-        }
-
-        return -1;
-    }
-
     public int insert(Employee employee) {
         logger.info("Inserting employee: " + employee.getUsername());
 
         try {
             Connection connection = connectionManager.getConnection();
-            String sql = "INSERT INTO users (user_id, username, password, full_name, email, user_type) VALUES (?, ?, ?, ?, ?, ?) RETURNING user_id";
+            String sql = "INSERT INTO users (username, password, full_name, email, user_type) VALUES (?, ?, ?, ?, ?) RETURNING user_id";
 
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, getNextAvailableID());
-            statement.setString(2, employee.getUsername());
-            statement.setString(3, employee.getPassword());
-            statement.setString(4, employee.getFullName());
-            statement.setString(5, employee.getEmail());
-            statement.setString(6, "EMPLOYEE");
+            statement.setString(1, employee.getUsername());
+            statement.setString(2, employee.getPassword());
+            statement.setString(3, employee.getFullName());
+            statement.setString(4, employee.getEmail());
+            statement.setString(5, "EMPLOYEE");
 
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                int userId = resultSet.getInt("user_id");
-                logger.info("Employee inserted successfully. ID: " + userId);
-                return userId;
-            } else {
-                logger.error("Employee insertion failed.");
+                int id = resultSet.getInt("user_id");
+                logger.info("Employee inserted with ID: " + id);
+                return id;
             }
         } catch (SQLException e) {
             logger.error("Error inserting employee: " + employee.getUsername(), e);
@@ -122,8 +86,6 @@ public class EmployeeDAO extends DAO<Employee> {
             if (resultSet.next()) {
                 logger.info("Employee exists: " + employee.getUsername());
                 exists = true;
-            } else {
-                logger.info("Employee does not exist: " + employee.getUsername());
             }
         } catch (SQLException e) {
             logger.error("Error verifying if employee exists: " + employee.getUsername(), e);
@@ -164,8 +126,6 @@ public class EmployeeDAO extends DAO<Employee> {
             if (resultSet.next()) {
                 verified = true;
                 logger.info("Employee credentials verified: " + username);
-            } else {
-                logger.info("Employee credentials not verified: " + username);
             }
         } catch (SQLException e) {
             logger.error("Error verifying if employee credentials are valid: " + username, e);

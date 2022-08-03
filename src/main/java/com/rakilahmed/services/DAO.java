@@ -4,13 +4,6 @@ import java.util.List;
 
 public abstract class DAO<T> {
     /**
-     * Gets the next available ID from the database.
-     * 
-     * @return The next available ID.
-     */
-    protected abstract int getNextAvailableID();
-
-    /**
      * Inserts a new item into the database.
      * 
      * @param item The item to insert.
