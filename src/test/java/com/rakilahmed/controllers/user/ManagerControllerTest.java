@@ -28,20 +28,20 @@ public class ManagerControllerTest {
 
     @Test
     public void testSuccessfulRegister() {
-        String expected = "Manager registered successfully. Manager ID: 1";
+        int expected = 1;
         when(managerDAOMock.insert(manager)).thenReturn(1);
-        String actual = managerController.register(manager);
+        int actual = managerController.register(manager);
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void testFailedRegister() {
-        String expectedAlreadyExists = "Manager already exists";
+        int expectedAlreadyExists = -1;
         when(managerDAOMock.exists(manager)).thenReturn(true);
         assertEquals(expectedAlreadyExists, managerController.register(manager));
 
-        String expectedRegistrationFailed = "Manager registration failed";
+        int expectedRegistrationFailed = -1;
         when(managerDAOMock.exists(manager)).thenReturn(false);
         when(managerDAOMock.insert(manager)).thenReturn(0);
         assertEquals(expectedRegistrationFailed, managerController.register(manager));
@@ -49,36 +49,18 @@ public class ManagerControllerTest {
 
     @Test
     public void testSuccessfulLogin() {
-        String expected = "Manager logged in successfully. Manager ID: 1";
-        when(managerDAOMock.exists(manager)).thenReturn(true);
-        String actual = managerController.login(manager);
+        int expected = 1;
+        when(managerDAOMock.verify(manager.getUsername(), manager.getPassword())).thenReturn(1);
+        int actual = managerController.login(manager.getUsername(), manager.getPassword());
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void testFailedLogin() {
-        String expected = "Manager does not exist";
+        int expected = -1;
         when(managerDAOMock.exists(manager)).thenReturn(false);
-        String actual = managerController.login(manager);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSuccessfulLogout() {
-        String expected = "Manager logged out successfully. Manager ID: 1";
-        manager.setLoggedIn(true);
-        String actual = managerController.logout(manager);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testFailedLogout() {
-        String expected = "Manager is not logged in";
-        manager.setLoggedIn(false);
-        String actual = managerController.logout(manager);
+        int actual = managerController.login(manager.getUsername(), manager.getPassword());
 
         assertEquals(expected, actual);
     }

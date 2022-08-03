@@ -97,7 +97,7 @@ public class ManagerDAOTest {
 
     @Test
     public void testSuccessfulVerify() throws SQLException {
-        boolean expected = true;
+        int expected = 1;
         Manager employee = new Manager("rakil", "secret", "Rakil Ahmed", "rakil@email.com");
 
         if (employee.getUsername().equals(testManager.getUsername())
@@ -107,16 +107,16 @@ public class ManagerDAOTest {
             when(resultSetMock.next()).thenReturn(false);
         }
 
-        boolean actual = managerDAO.verify(employee.getUsername(), employee.getPassword());
+        int actual = managerDAO.verify(employee.getUsername(), employee.getPassword());
         assertEquals(expected, actual);
     }
 
     @Test
     public void testFailedVerify() throws SQLException {
-        assertEquals(false, managerDAO.verify(null, null));
+        assertEquals(-1, managerDAO.verify(null, null));
 
         when(statementMock.executeQuery()).thenThrow(new SQLException());
-        assertEquals(false, managerDAO.verify("rakil1", "secret"));
+        assertEquals(-1, managerDAO.verify("rakil1", "secret"));
     }
 
     @Test
