@@ -188,9 +188,10 @@ public class ReimbursementControllerTest {
 
     @Test
     public void testFailedGetAllForEmployee() {
+        assertEquals(null, reimbursementController.getAllForEmployee(0));
+
         List<Reimbursement> reimbursements = new ArrayList<>();
         when(reimbursementDAOMock.getAllForEmployee(1)).thenReturn(reimbursements);
-
         assertEquals(null, reimbursementController.getAllForEmployee(1));
     }
 
@@ -209,9 +210,10 @@ public class ReimbursementControllerTest {
 
     @Test
     public void testFailedGetAllPendingForEmployee() {
+        assertEquals(null, reimbursementController.getAllPendingForEmployee(0));
+
         List<Reimbursement> reimbursements = new ArrayList<>();
         when(reimbursementDAOMock.getAllPendingForEmployee(1)).thenReturn(reimbursements);
-
         assertEquals(null, reimbursementController.getAllPendingForEmployee(1));
     }
 
@@ -237,9 +239,10 @@ public class ReimbursementControllerTest {
 
     @Test
     public void testFailedGetAllResolvedForEmployee() {
+        assertEquals(null, reimbursementController.getAllResolvedForEmployee(0));
+
         List<Reimbursement> reimbursements = new ArrayList<>();
         when(reimbursementDAOMock.getAllResolvedForEmployee(1)).thenReturn(reimbursements);
-
         assertEquals(null, reimbursementController.getAllResolvedForEmployee(1));
     }
 }

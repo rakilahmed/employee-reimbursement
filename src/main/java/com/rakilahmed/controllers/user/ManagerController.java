@@ -5,14 +5,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.rakilahmed.models.user.Employee;
 import com.rakilahmed.models.user.Manager;
-import com.rakilahmed.services.user.EmployeeDAO;
 import com.rakilahmed.services.user.ManagerDAO;
 
 public class ManagerController extends UserController<Manager> {
     private final ManagerDAO managerDAO;
-    private final EmployeeController employeeController;
     private final Logger logger = LogManager.getLogger(ManagerController.class);
 
     /**
@@ -22,7 +19,6 @@ public class ManagerController extends UserController<Manager> {
      */
     public ManagerController(ManagerDAO managerDAO) {
         this.managerDAO = managerDAO;
-        this.employeeController = new EmployeeController(new EmployeeDAO());
     }
 
     public int register(Manager manager) {
@@ -42,25 +38,6 @@ public class ManagerController extends UserController<Manager> {
 
         logger.info("Manager registered successfully: " + id);
         return id;
-    }
-
-    /**
-     * Manager registers an employee.
-     * 
-     * @param employee The employee to be registered.
-     * @return String indicating success or failure.
-     */
-    public String registerEmployee(Employee employee) {
-        logger.info("Registering employee: " + employee.getUsername());
-        int id = employeeController.register(employee);
-
-        if (id > 0) {
-            logger.info("Employee registered successfully: " + id);
-            return "Employee registered successfully. Employee ID: " + id;
-        }
-
-        logger.warn("Employee registration failed: " + employee.getUsername());
-        return "Employee registration failed";
     }
 
     public int login(String username, String password) {
@@ -159,23 +136,5 @@ public class ManagerController extends UserController<Manager> {
 
         logger.info("All managers found successfully");
         return managers;
-    }
-
-    /**
-     * Retrieves all registered employees.
-     * 
-     * @return List of employees.
-     */
-    public List<Employee> getAllEmployees() {
-        logger.info("Getting all employees");
-        List<Employee> employees = employeeController.getAll();
-
-        if (employees == null || employees.isEmpty()) {
-            logger.warn("No employees found");
-            return null;
-        }
-
-        logger.info("All employees found successfully");
-        return employees;
     }
 }
