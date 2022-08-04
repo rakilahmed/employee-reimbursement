@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 public class Reimbursement {
     private int id;
-    private final int employeeId;
-    private final double amountRequested;
+    private int employeeId;
+    private final double amount;
     private String dateRequested = LocalDate.now().toString();
     private int managerId = 0;
     private String status = "PENDING";
@@ -16,7 +16,7 @@ public class Reimbursement {
     public Reimbursement() {
         this.id = 0;
         this.employeeId = 0;
-        this.amountRequested = 0;
+        this.amount = 0;
         this.dateRequested = "";
         this.managerId = 0;
         this.status = "PENDING";
@@ -25,55 +25,55 @@ public class Reimbursement {
     /**
      * Parameterized constructor for Reimbursement class.
      * 
-     * @param employeeId      The employee's id.
-     * @param amountRequested The amount requested.
+     * @param employeeId The employee's id.
+     * @param amount     The amount requested.
      */
-    public Reimbursement(int employeeId, double amountRequested) {
+    public Reimbursement(int employeeId, double amount) {
         this.employeeId = employeeId;
-        this.amountRequested = amountRequested;
+        this.amount = amount;
     }
 
     /**
      * Parameterized constructor for Reimbursement class.
      * 
-     * @param id              The reimbursement's id.
-     * @param employeeId      The employee's id.
-     * @param amountRequested The amount requested.
+     * @param id         The reimbursement's id.
+     * @param employeeId The employee's id.
+     * @param amount     The amount requested.
      */
-    public Reimbursement(int id, int employeeId, double amountRequested) {
+    public Reimbursement(int id, int employeeId, double amount) {
         this.id = id;
         this.employeeId = employeeId;
-        this.amountRequested = amountRequested;
+        this.amount = amount;
     }
 
     /**
      * Parameterized constructor for Reimbursement class.
      * 
-     * @param id              The reimbursement's id.
-     * @param employeeId      The employee's id.
-     * @param amountRequested The amount requested.
-     * @param managerId       The manager's id.
+     * @param id         The reimbursement's id.
+     * @param employeeId The employee's id.
+     * @param amount     The amount requested.
+     * @param managerId  The manager's id.
      */
-    public Reimbursement(int id, int employeeId, double amountRequested, int managerId) {
+    public Reimbursement(int id, int employeeId, double amount, int managerId) {
         this.id = id;
         this.employeeId = employeeId;
-        this.amountRequested = amountRequested;
+        this.amount = amount;
         this.managerId = managerId;
     }
 
     /**
      * Parameterized constructor for Reimbursement class.
      * 
-     * @param id              The reimbursement's id.
-     * @param employeeId      The employee's id.
-     * @param amountRequested The amount requested.
-     * @param managerId       The manager's id.
-     * @param status          The status of the reimbursement.
+     * @param id         The reimbursement's id.
+     * @param employeeId The employee's id.
+     * @param amount     The amount requested.
+     * @param managerId  The manager's id.
+     * @param status     The status of the reimbursement.
      */
-    public Reimbursement(int id, int employeeId, double amountRequested, int managerId, String status) {
+    public Reimbursement(int id, int employeeId, double amount, int managerId, String status) {
         this.id = id;
         this.employeeId = employeeId;
-        this.amountRequested = amountRequested;
+        this.amount = amount;
         this.managerId = managerId;
         this.status = status;
     }
@@ -97,12 +97,12 @@ public class Reimbursement {
     }
 
     /**
-     * Getter for amountRequested.
+     * Getter for amount.
      * 
-     * @return amountRequested
+     * @return amount
      */
-    public double getAmountRequested() {
-        return amountRequested;
+    public double getAmount() {
+        return amount;
     }
 
     /**
@@ -142,6 +142,15 @@ public class Reimbursement {
     }
 
     /**
+     * Setter for employeeId.
+     * 
+     * @param employeeId The employee's id.
+     */
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    /**
      * Setter for managerId.
      * 
      * @param managerId The manager's id.
@@ -161,7 +170,7 @@ public class Reimbursement {
 
     @Override
     public String toString() {
-        return "Reimbursement [id=" + id + ", employeeId=" + employeeId + ", amountRequested=" + amountRequested
+        return "Reimbursement [id=" + id + ", employeeId=" + employeeId + ", amount=" + amount
                 + ", dateRequested=" + dateRequested + ", managerId=" + managerId + ", status=" + status + "]";
     }
 }

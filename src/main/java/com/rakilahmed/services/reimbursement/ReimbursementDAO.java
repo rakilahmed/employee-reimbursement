@@ -46,7 +46,7 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, reimbursement.getEmployeeId());
-            statement.setDouble(2, reimbursement.getAmountRequested());
+            statement.setDouble(2, reimbursement.getAmount());
             statement.setString(3, reimbursement.getDateRequested());
             statement.setInt(4, reimbursement.getManagerId());
             statement.setString(5, reimbursement.getStatus());

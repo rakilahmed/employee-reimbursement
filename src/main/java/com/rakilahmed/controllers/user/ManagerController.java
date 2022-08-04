@@ -152,7 +152,7 @@ public class ManagerController extends UserController<Manager> {
         logger.info("Getting all managers");
         List<Manager> managers = managerDAO.getAll();
 
-        if (managers.isEmpty()) {
+        if (managers == null || managers.isEmpty()) {
             logger.warn("No managers found");
             return null;
         }
@@ -170,7 +170,7 @@ public class ManagerController extends UserController<Manager> {
         logger.info("Getting all employees");
         List<Employee> employees = employeeController.getAll();
 
-        if (employees.isEmpty()) {
+        if (employees == null || employees.isEmpty()) {
             logger.warn("No employees found");
             return null;
         }
