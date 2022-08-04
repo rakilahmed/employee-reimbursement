@@ -25,20 +25,16 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
     }
 
     /**
-     * Parameterized constructor for ReimbursementDAO class.
-     *
-     * @param url      The URL of the database.
-     * @param username The username of the database.
-     * @param password The password of the database.
+     * Constructor for ReimbursementDAO class.
+     * 
+     * @param connectionManager ConnectionManager object.
      */
-    public ReimbursementDAO(String url, String username, String password) {
-        this.connectionManager = new ConnectionManager(url, username, password, new org.postgresql.Driver());
+    public ReimbursementDAO(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     public int insert(Reimbursement reimbursement) {
         logger.info("Inserting reimbursement. Employee ID: " + reimbursement.getEmployeeId());
-
-        System.out.println(reimbursement.toString());
 
         try {
             Connection connection = connectionManager.getConnection();
@@ -89,8 +85,6 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
             if (resultSet.next()) {
                 logger.info("Reimbursement exists: " + reimbursement.getId());
                 exists = true;
-            } else {
-                logger.info("Reimbursement does not exist: " + reimbursement.getId());
             }
         } catch (SQLException e) {
             logger.error("Error checking if reimbursement exists.", e);
@@ -153,8 +147,6 @@ public class ReimbursementDAO extends DAO<Reimbursement> {
                         resultSet.getInt("manager_id"),
                         resultSet.getString("status"));
                 logger.info("Reimbursement retrieved. ID: " + id);
-            } else {
-                logger.error("Reimbursement does not exist: " + id);
             }
         } catch (SQLException e) {
             logger.error("Error getting reimbursement.", e);
