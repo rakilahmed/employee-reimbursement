@@ -34,24 +34,24 @@ public class EmployeeServlet extends HttpServlet {
      * @param id       The user's id.
      * @return True if user is logged in, false otherwise.
      */
-    private boolean validateLoginStatus(HttpServletRequest request, HttpServletResponse response, int id) {
+    private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response, int id) {
         logger.info("Validating login status for employee: " + id);
 
         if (id <= 0) {
             logger.warn("Invalid employee id: " + id);
             response.setStatus(401);
-            return false;
+            return true;
         }
 
         if (request.getSession().getAttribute("employee") == null
                 || (int) request.getSession().getAttribute("employee") != id) {
             logger.warn("Employee is not logged in: " + id);
             response.setStatus(401);
-            return false;
+            return true;
         }
 
         logger.info("Employee is logged in: " + id);
-        return true;
+        return false;
     }
 
     /**
@@ -100,7 +100,7 @@ public class EmployeeServlet extends HttpServlet {
             response.setStatus(400);
             return;
         } else if (parameters.length >= 2) {
-            int id = 0;
+            int id;
 
             if (parameters.length == 2) {
                 try {
@@ -113,7 +113,7 @@ public class EmployeeServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     employeeNotLoggedInJSON(response);
                     return;
                 }
@@ -147,7 +147,7 @@ public class EmployeeServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     employeeNotLoggedInJSON(response);
                     return;
                 }
@@ -176,7 +176,7 @@ public class EmployeeServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     employeeNotLoggedInJSON(response);
                     return;
                 }
@@ -208,7 +208,7 @@ public class EmployeeServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     employeeNotLoggedInJSON(response);
                     return;
                 }
@@ -240,7 +240,7 @@ public class EmployeeServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     response.getWriter().write("{" + "\"message\":\"You are not logged in\"" + "}");
                     response.setStatus(401);
                     return;
@@ -277,23 +277,16 @@ public class EmployeeServlet extends HttpServlet {
 
             if (id > 0) {
                 logger.info("Employee registered: " + id);
-
-                if (!validateLoginStatus(req, resp, id)) {
-                    req.getSession().setAttribute("employee", id);
-                    req.getSession().setMaxInactiveInterval(15 * 60);
-                }
-
-                String path = req.getContextPath() + "/employees/" + id;
-                System.out.println("Redirecting to: " + path);
-                logger.info("Redirecting to: " + path);
-                resp.sendRedirect(path);
+                resp.getWriter().write(objectMapper.writeValueAsString(employeeController.get(id)));
+                resp.setStatus(201);
+                return;
             }
 
             logger.warn("Employee registration failed: " + id);
             resp.getWriter().write("{" + "\"message\":\"Employee registration failed\"" + "}");
             resp.setStatus(404);
             return;
-        } else if (parameters.length == 2 && parameters[1].equals("login")) {
+        } else if (parameters.length == 2) {
             logger.info("Employee is trying to login");
             Employee employee = objectMapper.readValue(req.getReader(), Employee.class);
             int id = employeeController.login(employee.getUsername(), employee.getPassword());
@@ -301,25 +294,25 @@ public class EmployeeServlet extends HttpServlet {
             if (id > 0) {
                 logger.info("Employee logged in: " + id);
 
-                if (!validateLoginStatus(req, resp, id)) {
+                if (isLoggedIn(req, resp, id)) {
                     req.getSession().setAttribute("employee", id);
                     req.getSession().setMaxInactiveInterval(15 * 60);
                 }
 
                 String path = req.getContextPath() + "/employees/" + id;
-                System.out.println("Redirecting to: " + path);
+                logger.info("Redirecting to: " + path);
                 resp.sendRedirect(path);
+                return;
             }
 
             resp.getWriter().write("{" + "\"message\":\"Employee login failed\"" + "}");
             resp.setStatus(404);
             return;
         } else if (parameters.length == 3) {
-            int id = 0;
+            int id;
 
             try {
                 id = Integer.parseInt(parameters[1]);
-                logger.info("Employee is trying to update: " + id);
             } catch (NumberFormatException e) {
                 logger.warn("Invalid employee id: " + parameters[1]);
                 resp.getWriter().write("{" + "\"message\":\"Employee id must be an integer\"" + "}");
@@ -327,7 +320,7 @@ public class EmployeeServlet extends HttpServlet {
                 return;
             }
 
-            if (!validateLoginStatus(req, resp, id)) {
+            if (isLoggedIn(req, resp, id)) {
                 employeeNotLoggedInJSON(resp);
                 return;
             }
@@ -336,17 +329,18 @@ public class EmployeeServlet extends HttpServlet {
                 logger.info("Employee is trying to request reimbursement");
                 Reimbursement reimbursement = objectMapper.readValue(req.getReader(), Reimbursement.class);
                 reimbursement.setEmployeeId(id);
-                String message = reimbursementController.create(reimbursement);
+                int reimbursementId = reimbursementController.create(reimbursement);
 
-                if (message.equals("success")) {
-                    logger.info("Employee requested reimbursement: " + id);
-                    resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
-                    resp.setStatus(200);
+                if (reimbursementId > 0) {
+                    logger.info("Employee requested reimbursement: " + reimbursementId);
+                    resp.getWriter()
+                            .write(objectMapper.writeValueAsString(reimbursementController.get(reimbursementId)));
+                    resp.setStatus(201);
                     return;
                 }
 
-                logger.warn("Employee request reimbursement failed: " + id);
-                resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
+                logger.warn("Employee request reimbursement failed: " + reimbursement.getId());
+                resp.getWriter().write("{" + "\"message\":\"Employee request reimbursement failed\"" + "}");
                 resp.setStatus(404);
                 return;
             }
@@ -363,7 +357,7 @@ public class EmployeeServlet extends HttpServlet {
         String idParameter = req.getRequestURI().split("/")[2];
         String operationParameter = req.getRequestURI().split("/")[3];
 
-        int id = 0;
+        int id;
 
         try {
             id = Integer.parseInt(idParameter);
@@ -374,7 +368,7 @@ public class EmployeeServlet extends HttpServlet {
             return;
         }
 
-        if (!validateLoginStatus(req, resp, id)) {
+        if (isLoggedIn(req, resp, id)) {
             employeeNotLoggedInJSON(resp);
             return;
         }
@@ -399,7 +393,7 @@ public class EmployeeServlet extends HttpServlet {
 
         if (message.contains("success")) {
             logger.info("Employee updated profile: " + id);
-            resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
+            resp.getWriter().write(objectMapper.writeValueAsString(employeeController.get(id)));
             resp.setStatus(200);
             return;
         }

@@ -22,26 +22,28 @@ public class ReimbursementController {
     }
 
     /**
+     * Creates a new reimbursement.
+     * 
      * @param reimbursement The reimbursement to add.
-     * @return String indicating if the creation was successful or not.
+     * @return Id of the reimbursement.
      */
-    public String create(Reimbursement reimbursement) {
+    public int create(Reimbursement reimbursement) {
         logger.info("Creating reimbursement. Employee ID: " + reimbursement.getEmployeeId());
 
         if (reimbursement.getId() > 0 && reimbursementDAO.exists(reimbursement)) {
             logger.warn("Reimbursement already exists: " + reimbursement.getId());
-            return "Reimbursement already exists";
+            return -1;
         }
 
         int id = reimbursementDAO.insert(reimbursement);
 
         if (id <= 0) {
             logger.warn("Reimbursement creation failed: " + reimbursement.getId());
-            return "Reimbursement creation failed";
+            return -1;
         }
 
         logger.info("Reimbursement created successfully: " + id);
-        return "Reimbursement created successfully. Reimbursement ID: " + id;
+        return id;
     }
 
     /**

@@ -38,24 +38,24 @@ public class ManagerServlet extends HttpServlet {
      * @param id       The user's id.
      * @return True if user is logged in, false otherwise.
      */
-    private boolean validateLoginStatus(HttpServletRequest request, HttpServletResponse response, int id) {
+    private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response, int id) {
         logger.info("Validating login status for manager: " + id);
 
         if (id <= 0) {
             logger.warn("Invalid manager id: " + id);
             response.setStatus(401);
-            return false;
+            return true;
         }
 
         if (request.getSession().getAttribute("manager") == null
                 || (int) request.getSession().getAttribute("manager") != id) {
             logger.warn("Manager is not logged in: " + id);
             response.setStatus(401);
-            return false;
+            return true;
         }
 
         logger.info("Manager is logged in: " + id);
-        return true;
+        return false;
     }
 
     /**
@@ -96,16 +96,14 @@ public class ManagerServlet extends HttpServlet {
                     + "\"message\":\"To login, make a POST request to this endpoint with your username and password in the body of the request.\""
                     + "}");
             response.setStatus(400);
-            return;
         } else if (parameters.length == 2 && parameters[1].equals("new")) {
             logger.info("Manager is trying to create a new account");
             response.getWriter().write("{"
                     + "\"message\":\"To create a new manager, make a POST request to this endpoint with your username, password, full name, and email in the body of the request.\""
                     + "}");
             response.setStatus(400);
-            return;
         } else if (parameters.length >= 2) {
-            int id = 0;
+            int id;
 
             if (parameters.length == 2) {
                 try {
@@ -118,7 +116,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     managerNotLoggedInJSON(response);
                     return;
                 }
@@ -154,7 +152,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     managerNotLoggedInJSON(response);
                     return;
                 }
@@ -183,7 +181,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     managerNotLoggedInJSON(response);
                     return;
                 }
@@ -203,7 +201,7 @@ public class ManagerServlet extends HttpServlet {
                 response.setStatus(404);
                 return;
             } else if (parameters.length == 4 && parameters[2].equals("employees")) {
-                int employeeId = 0;
+                int employeeId;
 
                 try {
                     id = Integer.parseInt(parameters[1]);
@@ -217,7 +215,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     managerNotLoggedInJSON(response);
                     return;
                 }
@@ -257,7 +255,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     managerNotLoggedInJSON(response);
                     return;
                 }
@@ -288,7 +286,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     managerNotLoggedInJSON(response);
                     return;
                 }
@@ -319,7 +317,7 @@ public class ManagerServlet extends HttpServlet {
                     return;
                 }
 
-                if (!validateLoginStatus(request, response, id)) {
+                if (isLoggedIn(request, response, id)) {
                     response.getWriter().write("{" + "\"message\":\"You are not logged in\"" + "}");
                     response.setStatus(401);
                     return;
@@ -358,23 +356,16 @@ public class ManagerServlet extends HttpServlet {
 
             if (id > 0) {
                 logger.info("Manager registered: " + id);
-
-                if (!validateLoginStatus(req, resp, id)) {
-                    req.getSession().setAttribute("manager", id);
-                    req.getSession().setMaxInactiveInterval(15 * 60);
-                }
-
-                String path = req.getContextPath() + "/managers/" + id;
-                System.out.println("Redirecting to " + path);
-                logger.info("Redirecting to " + path);
-                resp.sendRedirect(path);
+                resp.getWriter().write(objectMapper.writeValueAsString(managerController.get(id)));
+                resp.setStatus(201);
+                return;
             }
 
             logger.warn("Manager creation failed");
             resp.getWriter().write("{" + "\"message\":\"Manager registration failed\"" + "}");
             resp.setStatus(404);
             return;
-        } else if (parameters.length == 2 && parameters[1].equals("login")) {
+        } else if (parameters.length == 2) {
             logger.info("User is trying to login");
 
             Manager manager = objectMapper.readValue(req.getReader(), Manager.class);
@@ -383,15 +374,15 @@ public class ManagerServlet extends HttpServlet {
             if (id > 0) {
                 logger.info("Manager logged in: " + id);
 
-                if (!validateLoginStatus(req, resp, id)) {
+                if (isLoggedIn(req, resp, id)) {
                     req.getSession().setAttribute("manager", id);
                     req.getSession().setMaxInactiveInterval(15 * 60);
                 }
 
                 String path = req.getContextPath() + "/managers/" + id;
-                System.out.println("Redirecting to " + path);
                 logger.info("Redirecting to " + path);
                 resp.sendRedirect(path);
+                return;
             }
 
             logger.warn("Manager login failed");
@@ -412,11 +403,11 @@ public class ManagerServlet extends HttpServlet {
         String idParameter = req.getRequestURI().split("/")[2];
         String operationParameter = req.getRequestURI().split("/")[3];
 
-        int id = 0;
+        int id;
 
         try {
             id = Integer.parseInt(idParameter);
-            logger.info("Manager is trying to update profile or reolove a request: " + id);
+            logger.info("Manager is trying to update profile or resolve a request: " + id);
         } catch (NumberFormatException e) {
             logger.warn("Manager id must be an integer: " + idParameter);
             resp.getWriter().write("{" + "\"message\":\"Manager id must be an integer\"" + "}");
@@ -424,7 +415,7 @@ public class ManagerServlet extends HttpServlet {
             return;
         }
 
-        if (!validateLoginStatus(req, resp, id)) {
+        if (isLoggedIn(req, resp, id)) {
             managerNotLoggedInJSON(resp);
             return;
         }
@@ -446,7 +437,7 @@ public class ManagerServlet extends HttpServlet {
 
             if (message.contains("success")) {
                 logger.info("Manager profile updated: " + id);
-                resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
+                resp.getWriter().write(objectMapper.writeValueAsString(managerController.get(id)));
                 resp.setStatus(200);
                 return;
             }
@@ -457,22 +448,24 @@ public class ManagerServlet extends HttpServlet {
                             + "}");
             resp.setStatus(400);
             return;
-        } else if (operationParameter.equals("resolve")) {
-            logger.info("Manager is trying to resolve a request: " + id);
-            Reimbursement reimbursement = objectMapper.readValue(req.getReader(), Reimbursement.class);
-            String message = reimbursementController.update(reimbursement.getId(), id, reimbursement.getStatus());
-
-            if (message.contains("success")) {
-                logger.info("Manager resolved a request: " + id);
-                resp.getWriter().write("{" + "\"message\":\"" + message + "\"" + "}");
-                resp.setStatus(200);
-                return;
-            }
-
-            logger.warn("Manager request resolution failed: " + id);
-            resp.getWriter().write(
-                    "{" + "\"message\":\"Something went wrong, try again.\"" + "}");
-            resp.setStatus(400);
         }
+
+        Reimbursement reimbursement = objectMapper.readValue(req.getReader(), Reimbursement.class);
+        logger.info("Manager is trying to resolve a request: " + reimbursement.getId());
+        String message = reimbursementController.update(reimbursement.getId(), id, reimbursement.getStatus());
+
+        if (message.contains("success")) {
+            logger.info("Manager resolved a request: " + reimbursement.getId());
+            resp.getWriter()
+                    .write(objectMapper.writeValueAsString(reimbursementController.get(reimbursement.getId())));
+            resp.setStatus(200);
+            return;
+        }
+
+        logger.warn("Manager request resolution failed: " + reimbursement.getId());
+        resp.getWriter().write(
+                "{" + "\"message\":\"Something went wrong, try again. Make sure the reimbursement with the provided id actually exists.\""
+                        + "}");
+        resp.setStatus(400);
     }
 }

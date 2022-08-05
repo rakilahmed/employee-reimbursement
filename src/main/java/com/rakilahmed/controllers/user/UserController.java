@@ -7,7 +7,7 @@ public abstract class UserController<T> {
      * Registers a new user.
      * 
      * @param user The user to register.
-     * @return Id of the user if successful, -1 if not.
+     * @return ID of the user if successful, -1 if not.
      */
     public abstract int register(T user);
 
@@ -16,7 +16,7 @@ public abstract class UserController<T> {
      * 
      * @param username The username of the user.
      * @param password The password of the user.
-     * @return Id of the user if successful, -1 otherwise.
+     * @return ID of the user if successful, -1 otherwise.
      */
     public abstract int login(String username, String password);
 

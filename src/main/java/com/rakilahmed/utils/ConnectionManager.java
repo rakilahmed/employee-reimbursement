@@ -24,17 +24,6 @@ public class ConnectionManager {
     }
 
     /**
-     * Parameterized constructor for ConnectionManager class.
-     */
-    public ConnectionManager(String url, String username, String password, Driver driver) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.driver = driver;
-        this.driverRegistered = false;
-    }
-
-    /**
      * Registers the driver.
      *
      * @throws SQLException if the driver cannot be registered.

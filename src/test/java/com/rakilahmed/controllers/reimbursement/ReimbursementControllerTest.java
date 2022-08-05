@@ -28,23 +28,23 @@ public class ReimbursementControllerTest {
 
     @Test
     public void testSuccessfulCreate() {
-        String expected = "Reimbursement created successfully. Reimbursement ID: 1";
+        int expected = 1;
         when(reimbursementDAOMock.insert(reimbursement)).thenReturn(1);
-        String actual = reimbursementController.create(reimbursement);
+        int actual = reimbursementController.create(reimbursement);
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void testFailedCreate() {
-        String expectedAlreadyExists = "Reimbursement already exists";
+        int expectedAlreadyExists = -1;
         when(reimbursementDAOMock.exists(reimbursement)).thenReturn(true);
         assertEquals(expectedAlreadyExists, reimbursementController.create(reimbursement));
 
-        String expectedCreationFailed = "Reimbursement creation failed";
+        int expectedCreationFailed = -1;
         when(reimbursementDAOMock.exists(reimbursement)).thenReturn(false);
         when(reimbursementDAOMock.insert(reimbursement)).thenReturn(0);
-        String actual = reimbursementController.create(reimbursement);
+        int actual = reimbursementController.create(reimbursement);
 
         assertEquals(expectedCreationFailed, actual);
     }

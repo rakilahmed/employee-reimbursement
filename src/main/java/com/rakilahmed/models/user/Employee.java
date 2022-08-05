@@ -11,8 +11,8 @@ public class Employee extends User {
     /**
      * Parameterized constructor for Employee class.
      * 
-     * @param username
-     * @param password
+     * @param username The username of the employee.
+     * @param password The password of the employee.
      */
     public Employee(String username, String password) {
         super(username, password);
