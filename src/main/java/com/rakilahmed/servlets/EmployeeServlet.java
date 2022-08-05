@@ -123,12 +123,12 @@ public class EmployeeServlet extends HttpServlet {
                     response.setContentType("text/plain");
                     response.getWriter().write("You are successfully logged in, your id is " + id + ".\n\n");
                     response.getWriter().write("Allowed endpoints & method you need to use:\n");
-                    response.getWriter().write("- (GET) /" + id + "/profile  : to view your profile\n");
-                    response.getWriter().write("- (PUT) /" + id + "/update   : to update your profile\n");
-                    response.getWriter().write("- (POST) /" + id + "/request : to create a new request\n");
-                    response.getWriter().write("- (GET) /" + id + "/pending  : to view all pending requests\n");
-                    response.getWriter().write("- (GET) /" + id + "/resolved : to view all resolved requests\n");
-                    response.getWriter().write("- (GET) /" + id + "/logout   : to logout\n");
+                    response.getWriter().write("- (GET)  /" + id + "/profile  : to view your profile\n");
+                    response.getWriter().write("- (PUT)  /" + id + "/update   : to update your profile\n");
+                    response.getWriter().write("- (POST) /" + id + "/request  : to create a new request\n");
+                    response.getWriter().write("- (GET)  /" + id + "/pending  : to view all pending requests\n");
+                    response.getWriter().write("- (GET)  /" + id + "/resolved : to view all resolved requests\n");
+                    response.getWriter().write("- (GET)  /" + id + "/logout   : to logout\n");
                     response.setStatus(200);
                     return;
                 } else if (employeeController.get(id) == null) {

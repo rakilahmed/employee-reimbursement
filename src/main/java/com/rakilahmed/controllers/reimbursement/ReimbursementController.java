@@ -47,6 +47,8 @@ public class ReimbursementController {
     }
 
     /**
+     * Updates a reimbursement.
+     * 
      * @param id        The id of the reimbursement to get.
      * @param managerId The id of the manager who is getting the reimbursement.
      * @param status    The status of the reimbursement to get.
@@ -115,7 +117,7 @@ public class ReimbursementController {
     }
 
     /**
-     * Returns all pending reimbursements from the database.
+     * Returns all reimbursements from the database.
      * 
      * @return All reimbursements.
      */
