@@ -11,7 +11,6 @@ This is a simple Expense Reimbursement System (ERS) that allows employees to sub
 
 ## The manager can ...
 
-- Create a new employee
 - View all employees
 - View all pending requests
 - View all resolved requests
